@@ -1,0 +1,3006 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Мрия Random Coffee</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --mriya-green: #526a43;
+      --mriya-green-dark: #3f5534;
+      --mriya-green-soft: #e9efe1;
+      --mriya-gold: #ae813d;
+      --mriya-beige: #f5f1ea;
+      --mriya-cream: #fbfaf6;
+      --mriya-line: #ded8cf;
+      --mriya-text: #242424;
+      --mriya-muted: #6d6d6d;
+      --mriya-white: #ffffff;
+      --mriya-danger: #a35d4c;
+      --shadow-soft: 0 16px 42px rgba(57, 62, 53, .10);
+      --shadow-header: 0 8px 24px rgba(0, 0, 0, .08);
+      --radius-lg: 22px;
+      --radius-md: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: var(--mriya-text);
+      background:
+        radial-gradient(circle at 6% 84%, rgba(188, 171, 132, .12), transparent 34%),
+        radial-gradient(circle at 96% 16%, rgba(82, 106, 67, .08), transparent 32%),
+        linear-gradient(135deg, #fbfaf7 0%, #f8f5ef 54%, #ffffff 100%);
+      overflow-x: hidden;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      width: 520px;
+      height: 520px;
+      pointer-events: none;
+      opacity: .13;
+      z-index: 0;
+      border: 2px solid #d8cab2;
+      border-radius: 48% 52% 45% 55%;
+      transform: rotate(28deg);
+    }
+
+    body::before {
+      left: -220px;
+      bottom: -180px;
+    }
+
+    body::after {
+      right: -260px;
+      top: 90px;
+    }
+
+    body > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    header {
+      background: rgba(255, 255, 255, .96);
+      border-bottom: 1px solid rgba(222, 216, 207, .8);
+      box-shadow: var(--shadow-header);
+      min-height: auto;
+      padding: 0;
+    }
+
+    .topbar {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 20px 66px;
+      display: grid;
+      grid-template-columns: 300px 1fr 270px;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .brand-logo {
+      width: 252px;
+      max-width: 100%;
+      height: auto;
+      object-fit: contain;
+      display: block;
+    }
+
+    .brand-title {
+      display: none;
+    }
+
+    .main-nav {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 52px;
+      text-transform: uppercase;
+      font-size: 15px;
+      letter-spacing: .03em;
+      white-space: nowrap;
+    }
+
+    .main-nav a,
+    .main-nav button {
+      border: 0;
+      background: transparent;
+      padding: 0;
+      color: #111;
+      font: inherit;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .main-nav .active {
+      color: var(--mriya-gold);
+      font-weight: 600;
+    }
+
+    .top-user {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 14px;
+    }
+
+    .user-avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      border: 1px solid var(--mriya-green);
+      background:
+        radial-gradient(circle at 50% 36%, var(--mriya-green) 0 18%, transparent 19%),
+        radial-gradient(circle at 50% 72%, var(--mriya-green) 0 28%, transparent 29%),
+        #f6f8f1;
+    }
+
+    .top-user-name {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .top-user button {
+      display: block;
+      border: 0;
+      background: transparent;
+      padding: 2px 0 0;
+      color: var(--mriya-green-dark);
+      text-decoration: underline;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .admin-corner-button {
+      display: none;
+    }
+
+    .hero {
+      display: none;
+    }
+
+    main {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 34px 66px 54px;
+    }
+
+    .auth-shell {
+      min-height: calc(100vh - 118px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 0;
+    }
+
+    .auth-card {
+      width: 100%;
+      max-width: 440px;
+      background: rgba(255,255,255,.96);
+      border: 1px solid rgba(222, 216, 207, .82);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-soft);
+      overflow: hidden;
+    }
+
+    .auth-logo {
+      display: block;
+      width: 230px;
+      max-width: 72%;
+      margin: 28px auto 4px;
+    }
+
+    .auth-tabs {
+      display: flex;
+      gap: 20px;
+      padding: 20px 30px 0;
+      border-bottom: 1px solid var(--mriya-line);
+    }
+
+    .auth-tab-button {
+      border: 0;
+      background: transparent;
+      color: #8b8580;
+      padding: 0 0 16px;
+      margin: 0;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      border-bottom: 2px solid transparent;
+    }
+
+    .auth-tab-button.active {
+      color: var(--mriya-text);
+      font-size: 19px;
+      font-weight: 700;
+      border-bottom-color: var(--mriya-green);
+    }
+
+    .auth-tab-content {
+      padding: 24px 30px 32px;
+    }
+
+    .auth-tab-content h2,
+    .card h2 {
+      margin: 0 0 14px;
+      font-size: 26px;
+      line-height: 1.2;
+      color: var(--mriya-text);
+      font-weight: 700;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, .94);
+      border: 1px solid rgba(222, 216, 207, .82);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      box-shadow: var(--shadow-soft);
+      margin-bottom: 24px;
+    }
+
+    #profileSection {
+      display: grid;
+      grid-template-columns: 350px 1fr;
+      gap: 34px;
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    #profileSection.hidden {
+      display: none !important;
+    }
+
+    #profileSection > h2,
+    #profileSection > .row {
+      display: none;
+    }
+
+    .profile-layout {
+      display: grid;
+      grid-template-columns: 350px 1fr;
+      gap: 34px;
+      width: 100%;
+    }
+
+    .profile-sidebar {
+      background: rgba(255, 255, 255, .95);
+      border: 1px solid rgba(222, 216, 207, .78);
+      border-radius: var(--radius-lg);
+      padding: 44px 34px;
+      box-shadow: var(--shadow-soft);
+      min-height: 690px;
+    }
+
+    .profile-avatar {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 50% 34%, white 0 12%, transparent 13%),
+        radial-gradient(circle at 50% 70%, white 0 25%, transparent 26%),
+        linear-gradient(135deg, #8fa47d, var(--mriya-green));
+      margin-bottom: 28px;
+    }
+
+    .welcome-small {
+      font-size: 19px;
+      margin-bottom: 12px;
+    }
+
+    .welcome-name {
+      font-size: 30px;
+      line-height: 1.1;
+      color: var(--mriya-green);
+      font-weight: 800;
+      margin-bottom: 18px;
+    }
+
+    .welcome-text {
+      color: #222;
+      font-size: 18px;
+      line-height: 1.55;
+      margin-bottom: 76px;
+    }
+
+    .side-menu {
+      display: grid;
+      gap: 16px;
+    }
+
+    .side-menu-item {
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 16px;
+      align-items: center;
+      padding: 16px 22px;
+      border-radius: 12px;
+      color: #1f1f1f;
+      font-size: 17px;
+    }
+
+    .side-menu-item.active {
+      background: linear-gradient(100deg, #edf3e5, #f5f2ea);
+      color: var(--mriya-green-dark);
+      font-weight: 600;
+    }
+
+    .side-icon {
+      width: 28px;
+      height: 28px;
+      border: 2px solid var(--mriya-green);
+      border-radius: 8px;
+      opacity: .9;
+    }
+
+    .profile-main-card {
+      background: rgba(255, 255, 255, .95);
+      border: 1px solid rgba(222, 216, 207, .78);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-soft);
+      padding: 42px;
+      min-height: 690px;
+    }
+
+    .profile-main-card h2 {
+      font-size: 34px;
+      margin: 0 0 12px;
+    }
+
+    .profile-main-card > p {
+      font-size: 18px;
+      margin: 0 0 28px;
+    }
+
+    .pair-hero-card {
+      border: 1px solid var(--mriya-line);
+      border-radius: 16px;
+      padding: 34px 28px;
+      display: grid;
+      grid-template-columns: 1fr 86px 1fr;
+      gap: 28px;
+      align-items: center;
+      margin-bottom: 34px;
+    }
+
+    .pair-person {
+      display: grid;
+      grid-template-columns: 112px 1fr;
+      gap: 22px;
+      align-items: center;
+    }
+
+    .person-photo {
+      width: 112px;
+      height: 112px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 50% 36%, #fff 0 13%, transparent 14%),
+        radial-gradient(circle at 50% 72%, #fff 0 28%, transparent 29%),
+        linear-gradient(135deg, #93a67f, #d6cbb4);
+    }
+
+    .pair-person h3 {
+      font-size: 19px;
+      margin: 0 0 10px;
+    }
+
+    .pair-person div {
+      color: var(--mriya-muted);
+      line-height: 1.45;
+    }
+
+    .coffee-center {
+      width: 86px;
+      height: 86px;
+      border-radius: 50%;
+      background: #f5f0e7;
+      display: grid;
+      place-items: center;
+      font-size: 34px;
+    }
+
+    .meeting-details {
+      background: #faf8f4;
+      border-radius: 18px;
+      padding: 30px 34px;
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 30px;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+
+    .detail-grid {
+      display: grid;
+      gap: 24px;
+    }
+
+    .detail-row {
+      display: grid;
+      grid-template-columns: 230px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .detail-label {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: #222;
+      font-size: 16px;
+    }
+
+    .detail-icon {
+      width: 26px;
+      height: 26px;
+      border: 2px solid var(--mriya-green);
+      border-radius: 7px;
+    }
+
+    .detail-value {
+      color: var(--mriya-green-dark);
+      font-size: 16px;
+      line-height: 1.55;
+    }
+
+    .detail-actions {
+      display: grid;
+      gap: 18px;
+    }
+
+    .feedback-box {
+      background: linear-gradient(100deg, #eef4e7, #f7f3e8);
+      border-radius: 16px;
+      padding: 22px 34px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .feedback-box button {
+      margin-top: 0;
+      min-width: 210px;
+    }
+
+    .admin-card {
+      border-top: 6px solid var(--mriya-green);
+      margin-top: 30px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 22px;
+    }
+
+    label {
+      display: block;
+      margin-top: 16px;
+      margin-bottom: 7px;
+      color: var(--mriya-muted);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 12px 13px;
+      border: 1px solid var(--mriya-line);
+      border-radius: 10px;
+      background: #fff;
+      color: var(--mriya-text);
+      font: inherit;
+      outline: none;
+      transition: .18s ease;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: var(--mriya-green);
+      box-shadow: 0 0 0 4px rgba(82, 106, 67, .12);
+    }
+
+    textarea {
+      min-height: 86px;
+      resize: vertical;
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    .primary,
+    .secondary,
+    .danger,
+    .success {
+      border: 0;
+      border-radius: 9px;
+      padding: 13px 18px;
+      margin-top: 16px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 700;
+      transition: .18s ease;
+    }
+
+    .compact-button {
+      width: auto;
+      min-width: 108px;
+    }
+
+    .primary,
+    .success {
+      background: linear-gradient(135deg, #6f875f, var(--mriya-green));
+      color: #fff;
+      box-shadow: 0 12px 24px rgba(82, 106, 67, .22);
+    }
+
+    .primary:hover,
+    .success:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 18px 32px rgba(82, 106, 67, .26);
+    }
+
+    .secondary {
+      background: transparent;
+      color: var(--mriya-green);
+      border: 1px solid var(--mriya-green);
+    }
+
+    .danger {
+      background: var(--mriya-danger);
+      color: #fff;
+    }
+
+    .link-button {
+      border: 0;
+      background: transparent;
+      color: var(--mriya-green-dark);
+      padding: 0;
+      margin: 0;
+      cursor: pointer;
+      font-size: 13px;
+      border-bottom: 1px solid rgba(82, 106, 67, .35);
+    }
+
+    .auth-links {
+      display: flex;
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .muted {
+      color: var(--mriya-muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .list {
+      margin-top: 16px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .item {
+      border: 1px solid var(--mriya-line);
+      border-radius: 16px;
+      padding: 14px;
+      background: #fffdf8;
+    }
+
+    .item strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--mriya-text);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .notice {
+      padding: 13px 14px;
+      border-radius: 14px;
+      margin-top: 16px;
+      background: #f0f4e8;
+      color: var(--mriya-green-dark);
+      font-size: 14px;
+      border: 1px solid #dce6cf;
+    }
+
+    .notice.error {
+      background: #fff0ed;
+      color: #8a2d25;
+      border-color: #efc9c1;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--mriya-muted);
+      font-size: 13px;
+      padding: 30px;
+    }
+
+    @media (max-width: 1180px) {
+      .topbar {
+        grid-template-columns: 230px 1fr 220px;
+        padding: 18px 28px;
+      }
+
+      .main-nav {
+        gap: 24px;
+        font-size: 13px;
+      }
+
+      main {
+        padding: 28px;
+      }
+
+      .profile-layout,
+      #profileSection {
+        grid-template-columns: 1fr;
+      }
+
+      .profile-sidebar {
+        min-height: auto;
+      }
+
+      .meeting-details {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .topbar {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .main-nav {
+        justify-content: flex-start;
+        overflow-x: auto;
+      }
+
+      .top-user {
+        justify-content: flex-start;
+      }
+
+      .pair-hero-card {
+        grid-template-columns: 1fr;
+      }
+
+      .coffee-center {
+        margin: 0 auto;
+      }
+
+      .pair-person {
+        grid-template-columns: 72px 1fr;
+      }
+
+      .person-photo {
+        width: 72px;
+        height: 72px;
+      }
+
+      .detail-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .feedback-box {
+        display: grid;
+      }
+    }
+  
+    .brand-logo-svg {
+      display: block;
+      width: 252px;
+      max-width: 100%;
+      height: auto;
+    }
+
+    .auth-logo {
+      width: 230px;
+      max-width: 72%;
+      margin: 28px auto 4px;
+    }
+
+    .auth-logo .brand-logo-svg {
+      width: 100%;
+      height: auto;
+    }
+
+    .avatar-svg,
+    .coffee-svg,
+    .leaf-svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .user-avatar,
+    .profile-avatar,
+    .person-photo,
+    .coffee-center {
+      background: none !important;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+    }
+
+    .user-avatar .avatar-svg,
+    .profile-avatar .avatar-svg,
+    .person-photo .avatar-svg {
+      border-radius: 50%;
+    }
+
+    .feedback-box .leaf-svg {
+      width: 42px;
+      height: 42px;
+      flex: 0 0 auto;
+    }
+
+  
+.menu-svg{
+ width:24px;
+ height:24px;
+ display:block;
+}
+.side-icon{
+ width:28px;
+ height:28px;
+ border:none !important;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+}
+
+
+.preferences-card{
+  background:#fff;
+  border:1px solid #e2ddd3;
+  border-radius:18px;
+  padding:32px;
+  margin-top:24px;
+}
+.preferences-title{
+  font-size:28px;
+  font-weight:700;
+  margin-bottom:18px;
+  color:#526a43;
+}
+.preferences-text{
+  line-height:1.7;
+  font-size:17px;
+  color:#333;
+  white-space:pre-wrap;
+}
+.side-menu-item{
+  cursor:pointer;
+}
+
+
+    
+
+    .side-menu-item {
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .side-menu-item:hover {
+      background: linear-gradient(100deg, #f2f6ec, #f8f4eb);
+      color: var(--mriya-green-dark);
+    }
+
+
+/* Clean stable cabinet layout */
+
+
+
+
+
+
+
+
+
+
+.simple-row {
+  padding: 20px 0;
+  border-bottom: 1px solid var(--mriya-line);
+}
+
+.simple-row:last-child {
+  border-bottom: 0;
+}
+
+.simple-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--mriya-green-dark);
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.simple-text {
+  font-size: 16px;
+  line-height: 1.75;
+  color: #333;
+}
+
+.simple-textarea {
+  width: 100%;
+  min-height: 260px;
+  box-sizing: border-box;
+}
+
+
+
+
+
+.instruction-item:last-child {
+  border-bottom:none;
+}
+
+.instruction-circle {
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:#5d764c;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:700;
+  font-size:18px;
+}
+
+.instruction-item-title {
+  font-size:18px;
+  font-weight:700;
+  color:#202020;
+  line-height:1.4;
+}
+
+.instruction-item-text {
+  font-size:16px;
+  line-height:1.75;
+  color:#444;
+}
+
+@media (max-width: 1280px) {
+  .profile-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  .profile-sidebar {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  
+
+  .instruction-item-text {
+    grid-column:2;
+  }
+}
+
+
+/* FINAL layout repair */
+main {
+  max-width: 1440px !important;
+  width: 100% !important;
+  margin: 0 auto !important;
+  padding: 34px 66px 54px !important;
+  box-sizing: border-box !important;
+}
+
+#profileSection {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+#profileSection.hidden {
+  display: none !important;
+}
+
+#profileSection > h2,
+#profileSection > .row {
+  display: none !important;
+}
+
+.profile-layout {
+  display: grid !important;
+  grid-template-columns: 350px minmax(0, 1fr) !important;
+  gap: 34px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  align-items: start !important;
+}
+
+.profile-sidebar {
+  width: 350px !important;
+  min-width: 350px !important;
+  max-width: 350px !important;
+  box-sizing: border-box !important;
+}
+
+#mainContentArea {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  display: block !important;
+  box-sizing: border-box !important;
+}
+
+#mainContentArea > .profile-main-card,
+.profile-main-card {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.pair-hero-card {
+  width: 100% !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 86px minmax(0, 1fr) !important;
+  gap: 28px !important;
+  box-sizing: border-box !important;
+}
+
+.meeting-details {
+  width: 100% !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 300px !important;
+  gap: 30px !important;
+  box-sizing: border-box !important;
+}
+
+.feedback-box {
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.simple-wide-card,
+.instruction-box {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.instruction-item {
+  display: grid !important;
+  grid-template-columns: 60px 280px minmax(0, 1fr) !important;
+  gap: 24px !important;
+  align-items: start !important;
+}
+
+@media (max-width: 1280px) {
+  main {
+    padding: 28px !important;
+  }
+
+  .profile-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  .profile-sidebar {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .meeting-details {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .pair-hero-card {
+    grid-template-columns: 1fr !important;
+  }
+
+  .instruction-item {
+    grid-template-columns: 50px 1fr !important;
+  }
+
+  .instruction-item-text {
+    grid-column: 2 !important;
+  }
+}
+
+
+.instruction-table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:24px;
+  background:#fff;
+  border-radius:20px;
+  overflow:hidden;
+}
+
+.instruction-table th{
+  background:#6e8757;
+  color:#fff;
+  padding:18px;
+  text-align:left;
+  font-size:16px;
+}
+
+.instruction-table td{
+  padding:18px;
+  border-bottom:1px solid #ece4d9;
+  vertical-align:top;
+  font-size:15px;
+  line-height:1.7;
+}
+
+.instruction-table tr:last-child td{
+  border-bottom:none;
+}
+
+.instruction-step-icon{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  background:#eef3e8;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
+}
+
+
+.admin-page-wrapper {
+  max-width: 1180px;
+  margin: 40px auto;
+  padding: 0 18px;
+}
+
+.admin-page-wrapper .admin-card {
+  display: block;
+  width: 100%;
+}
+
+
+#adminSection.hidden {
+  display: none !important;
+}
+
+body:not(.admin-page-open) #adminSection {
+  display: none !important;
+}
+
+
+/* Admin panel must exist only on the admin page */
+#adminSection.admin-only-page {
+  display: none !important;
+}
+
+body.admin-page-open #adminSection.admin-only-page {
+  display: block !important;
+}
+
+body:not(.admin-page-open) #adminSection.admin-only-page {
+  display: none !important;
+}
+
+
+/* Hide only top-right guest badge on auth screen */
+body.guest-mode .top-user {
+  display: none !important;
+}
+
+/* Keep sidebar menu visible for authorized users */
+body.guest-mode #profileSection.hidden {
+  display: none !important;
+}
+
+
+#publicSection.hidden {
+  display: none !important;
+}
+
+
+body:not(.admin-page-open) #adminSection {
+  display: none !important;
+}
+
+body.admin-page-open #adminSection {
+  display: block !important;
+}
+
+
+.logo-image{
+  height:72px;
+  width:auto;
+  object-fit:contain;
+}
+
+/* Admin exit button */
+.admin-exit-btn{
+  margin-left:auto;
+}
+
+/* Profile edit modal */
+.profile-edit-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+}
+
+.profile-edit-grid textarea{
+  min-height:120px;
+}
+
+@media (max-width: 900px){
+  .profile-edit-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+
+.mriya-header-logo {
+  display: block;
+  width: 252px;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.mriya-auth-logo {
+  display: block;
+  width: 230px;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+  margin: 0 auto;
+}
+
+.profile-edit-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.profile-edit-grid textarea {
+  min-height: 120px;
+}
+
+@media (max-width: 900px) {
+  .profile-edit-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+.profile-photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 50%;
+}
+
+.photo-upload-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+
+.photo-upload-preview {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid #efe6da;
+  background: #f4efe8;
+}
+
+
+.animal-profile-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 50%;
+}
+
+</style>
+</head>
+<body class="guest-mode">
+  <button class="admin-corner-button" onclick="scrollToAdmin()">Личный кабинет администратора</button>
+<header>
+    <div class="topbar">
+      <div class="brand">
+        <img src="/static/mriya-logo.png" class="mriya-header-logo" alt="МРИЯ">
+      </div>
+
+      <nav class="main-nav">
+        <button class="active" onclick="openCabinetOrAuth()">Мой кабинет</button>
+        <button onclick="closeAdminPage(); openPublicAbout()">О проекте</button>
+        <button onclick="closeAdminPage(); openPublicInstruction()">Как это работает</button>
+        <button onclick="openAdminPageOnly()">Админ</button>
+      </nav>
+
+      <div class="top-user">
+        <div class="user-avatar" id="topUserAvatar">
+<svg class="avatar-svg" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <defs>
+    <linearGradient id="userAvatarGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#93a67f"/>
+      <stop offset="1" stop-color="#526a43"/>
+    </linearGradient>
+  </defs>
+  <circle cx="80" cy="80" r="80" fill="url(#userAvatarGradient)"/>
+  <circle cx="80" cy="58" r="22" fill="#ffffff"/>
+  <path d="M40 132c7-31 25-47 40-47s33 16 40 47" fill="#ffffff"/>
+</svg>
+</div>
+        <div>
+          <div id="topUserName" class="top-user-name">Гость</div>
+          <button onclick="logoutUser()">Выйти</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+<main>
+  <section id="publicSection" class="hidden"></section>
+  <section id="authSection" class="auth-shell">
+    <div class="auth-card">
+      <div class="auth-logo"><img src="/static/mriya-logo.png" class="mriya-auth-logo" alt="МРИЯ"></div>
+      <div class="auth-tabs">
+        <button id="loginTabButton" class="auth-tab-button active" onclick="switchAuthTab('login')">Вход</button>
+        <button id="registerTabButton" class="auth-tab-button" onclick="switchAuthTab('register')">Регистрация</button>
+      </div>
+
+      <div id="loginTab" class="auth-tab-content">
+        <h2>Вход</h2>
+
+        <label>Логин или e-mail</label>
+        <input id="loginEmail" type="email" autocomplete="email" />
+
+        <label>Пароль</label>
+        <input id="loginPassword" type="password" autocomplete="current-password" />
+
+        <button class="primary compact-button" onclick="loginUser()">Войти</button>
+
+        <div class="auth-links">
+          <button class="link-button" onclick="switchAuthTab('forgot')">Напомнить пароль</button>
+        </div>
+
+        <div id="loginNotice" class="notice hidden"></div>
+      </div>
+
+      <div id="registerTab" class="auth-tab-content hidden">
+        <h2>Регистрация</h2>
+
+        <form id="registrationForm">
+          <label>Имя и фамилия</label>
+          <input id="fullName" required placeholder="Иван Иванов" />
+
+          <label>Email</label>
+          <input id="email" type="email" required placeholder="ivan@example.com" />
+
+          <label>Пароль</label>
+          <input id="password" type="password" required minlength="4" autocomplete="new-password" />
+
+          <label>Отдел</label>
+          <input id="department" required placeholder="ИТ" />
+
+          <label>Город</label>
+          <input id="city" required placeholder="Москва" />
+
+          <label>Интересы</label>
+          <textarea id="interests" required placeholder="Книги, кофе, спорт"></textarea>
+
+          <button class="primary compact-button" type="submit">Зарегистрироваться</button>
+        </form>
+
+        <div id="registrationNotice" class="notice hidden"></div>
+      </div>
+
+      <div id="forgotTab" class="auth-tab-content hidden">
+        <h2>Восстановление пароля</h2>
+        <p class="muted">Укажи email, с которым проходила регистрация. На почту придёт ссылка для смены пароля.</p>
+
+        <label>Email</label>
+        <input id="forgotEmail" type="email" placeholder="ivan@example.com" />
+
+        <button class="primary compact-button" onclick="requestPasswordReset()">Отправить письмо</button>
+
+        <div class="auth-links">
+          <button class="link-button" onclick="switchAuthTab('login')">Вернуться ко входу</button>
+        </div>
+
+        <div id="forgotNotice" class="notice hidden"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="resetSection" class="card hidden">
+    <h2>🔐 Новый пароль</h2>
+    <p class="muted">Задай новый пароль для входа в Random Coffee.</p>
+    <label>Новый пароль</label>
+    <input id="newPassword" type="password" minlength="4" autocomplete="new-password" />
+    <button class="primary" onclick="resetPassword()">Сменить пароль</button>
+    <div id="resetNotice" class="notice hidden"></div>
+  </section>
+
+  <section id="profileSection" class="card hidden">
+    <h2>👤 Мой кабинет</h2>
+    <div id="profileContent" class="muted">Войди, чтобы увидеть профиль и свою пару.</div>
+    <div class="row">
+      <button class="secondary" onclick="loadProfile()">🔄 Обновить</button>
+      <button class="danger" onclick="leaveMe()">🚪 Выйти из Random Coffee</button>
+      <button class="secondary" onclick="logoutUser()">Выйти из аккаунта</button>
+    </div>
+  </section>
+
+  <section id="adminSection" class="card admin-card hidden admin-only-page">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;">
+      <h2>🔐 Админ-панель</h2>
+      <button id="adminExitBtn" class="secondary hidden" onclick="exitAdminPage()">Выйти из админки</button>
+    </div>
+
+    <div id="adminLogin">
+      <label>Пароль администратора</label>
+      <input id="adminPassword" type="password" autocomplete="current-password" />
+      <button class="primary compact-button" onclick="loginAdmin()">Войти</button>
+      <div id="adminLoginNotice" class="notice hidden"></div>
+    </div>
+
+    <div id="adminControls" class="hidden">
+      <div class="row">
+        <button class="success" onclick="createPairs()">☕ Создать пары</button>
+        <button class="danger" onclick="resetPairs()">🗑 Сбросить пары</button>
+        <button class="secondary" onclick="loadAdminData()">🔄 Обновить</button>
+        <button class="secondary" onclick="exportUsersExcel()">⬇️ Участники Excel</button>
+        <button class="secondary" onclick="exportPairsExcel()">⬇️ Пары Excel</button>
+        <button class="secondary" onclick="exportFeedbacksExcel()">⬇️ Отзывы Excel</button>
+      </div>
+
+      <div class="grid" style="margin-top: 20px;">
+        <div>
+          <h2>👥 Участники</h2>
+          <div id="usersList" class="list"></div>
+        </div>
+
+        <div>
+          <h2>🔎 Текущие пары</h2>
+          <p class="muted">Здесь отображаются пары, созданные кнопкой «Создать пары».</p>
+          <div id="pairsList" class="list"></div>
+        </div>
+
+        <div>
+          <h2>💬 Отзывы пользователей</h2>
+          <p class="muted">Здесь отображаются отзывы, отправленные через раздел «Обратная связь».</p>
+          <div id="feedbacksList" class="list"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+let adminPassword = localStorage.getItem("adminPassword") || "";
+let userToken = localStorage.getItem("userToken") || "";
+let currentUser = null;
+  updateHeaderAuthState();
+let currentAuthTab = localStorage.getItem("currentAuthTab") || "login";
+let resetToken = "";
+const SVG_USER_AVATAR = "\n<svg class=\"avatar-svg\" viewBox=\"0 0 160 160\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\">\n  <defs>\n    <linearGradient id=\"userAvatarGradient\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"1\">\n      <stop offset=\"0\" stop-color=\"#93a67f\"/>\n      <stop offset=\"1\" stop-color=\"#526a43\"/>\n    </linearGradient>\n  </defs>\n  <circle cx=\"80\" cy=\"80\" r=\"80\" fill=\"url(#userAvatarGradient)\"/>\n  <circle cx=\"80\" cy=\"58\" r=\"22\" fill=\"#ffffff\"/>\n  <path d=\"M40 132c7-31 25-47 40-47s33 16 40 47\" fill=\"#ffffff\"/>\n</svg>\n";
+const SVG_PARTNER_AVATAR = "\n<svg class=\"avatar-svg\" viewBox=\"0 0 160 160\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\">\n  <defs>\n    <linearGradient id=\"partnerAvatarGradient\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"1\">\n      <stop offset=\"0\" stop-color=\"#d8cdbb\"/>\n      <stop offset=\"1\" stop-color=\"#6f875f\"/>\n    </linearGradient>\n  </defs>\n  <circle cx=\"80\" cy=\"80\" r=\"80\" fill=\"url(#partnerAvatarGradient)\"/>\n  <circle cx=\"80\" cy=\"58\" r=\"22\" fill=\"#ffffff\"/>\n  <path d=\"M40 132c7-31 25-47 40-47s33 16 40 47\" fill=\"#ffffff\"/>\n</svg>\n";
+const SVG_COFFEE = "\n<svg class=\"coffee-svg\" viewBox=\"0 0 120 120\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\">\n  <circle cx=\"60\" cy=\"60\" r=\"60\" fill=\"#f3efe8\"/>\n  <path d=\"M38 52h36v18a17 17 0 0 1-17 17h-2a17 17 0 0 1-17-17V52z\" fill=\"#ffffff\" stroke=\"#d8cdbb\" stroke-width=\"3\"/>\n  <path d=\"M74 56h8c8 0 8 15 0 15h-8\" fill=\"none\" stroke=\"#d8cdbb\" stroke-width=\"3\"/>\n  <ellipse cx=\"56\" cy=\"52\" rx=\"18\" ry=\"7\" fill=\"#6d3f20\"/>\n  <path d=\"M45 40c-4-8 8-12 3-22M60 40c-4-8 8-12 3-22M75 40c-4-8 8-12 3-22\" stroke=\"#c7bba8\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\"/>\n</svg>\n";
+const SVG_LEAF = "\n<svg class=\"leaf-svg\" viewBox=\"0 0 120 120\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\">\n  <path d=\"M60 96C36 75 31 47 47 23c23 8 36 28 31 51 13-12 24-13 37-7-14 22-35 29-55 29z\" fill=\"none\" stroke=\"#526a43\" stroke-width=\"5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\n  <path d=\"M60 96c5-26 6-50 17-72\" stroke=\"#b08a47\" stroke-width=\"4\" fill=\"none\" stroke-linecap=\"round\"/>\n</svg>\n";
+
+const ICON_PAIR = `<svg class="menu-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="3" fill="none" stroke="#526a43" stroke-width="2"/><circle cx="16" cy="8" r="3" fill="none" stroke="#b08a47" stroke-width="2"/><path d="M3 19c1-3 3-5 5-5s4 2 5 5" fill="none" stroke="#526a43" stroke-width="2"/><path d="M11 19c1-3 3-5 5-5s4 2 5 5" fill="none" stroke="#b08a47" stroke-width="2"/></svg>`;
+const ICON_HISTORY = `<svg class="menu-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" fill="none" stroke="#526a43" stroke-width="2"/><path d="M12 7v6l4 2" fill="none" stroke="#b08a47" stroke-width="2" stroke-linecap="round"/></svg>`;
+const ICON_PREFS = `<svg class="menu-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3l2 3 4 1-1 4 2 3-3 2-1 4h-6l-1-4-3-2 2-3-1-4 4-1 2-3z" fill="none" stroke="#526a43" stroke-width="1.8"/><circle cx="12" cy="12" r="3" fill="none" stroke="#b08a47" stroke-width="1.8"/></svg>`;
+const ICON_FEEDBACK = `<svg class="menu-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 5h16v10H8l-4 4V5z" fill="none" stroke="#526a43" stroke-width="2"/><path d="M8 9h8M8 12h5" stroke="#b08a47" stroke-width="2" stroke-linecap="round"/></svg>`;
+const ICON_HELP = `<svg class="menu-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" fill="none" stroke="#526a43" stroke-width="2"/><path d="M9.5 9a2.5 2.5 0 1 1 4 2c-1 1-1.5 1.5-1.5 3" fill="none" stroke="#b08a47" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17" r="1" fill="#526a43"/></svg>`;
+
+
+
+
+function updateHeaderAuthState() {
+  if (userToken) {
+    document.body.classList.remove("guest-mode");
+  } else {
+    document.body.classList.add("guest-mode");
+  }
+}
+
+function openCabinetOrAuth() {
+  setCurrentPage("cabinet");
+  setCurrentPage(userToken ? "cabinet" : "auth");
+  closeAdminPage();
+  document.body.classList.remove("admin-page-open");
+
+  const publicSection = document.getElementById("publicSection");
+
+  if (publicSection) {
+    publicSection.classList.add("hidden");
+    publicSection.innerHTML = "";
+  }
+
+  if (!userToken) {
+    showSection("authSection");
+    switchAuthTab("login");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    return;
+  }
+
+  document.body.classList.remove("guest-mode");
+  showSection("profileSection");
+  loadProfile();
+}
+
+
+function setCurrentPage(pageName) {
+  localStorage.setItem("currentPage", pageName);
+}
+
+function getCurrentPage() {
+  return localStorage.getItem("currentPage") || "";
+}
+
+function openSavedPage() {
+  const page = getCurrentPage();
+
+  if (window.location.hash === "#admin" || page === "admin") {
+    openAdminPageOnly();
+    return;
+  }
+
+  if (page === "about") {
+    openPublicAbout();
+    return;
+  }
+
+  if (page === "instruction") {
+    openPublicInstruction();
+    return;
+  }
+
+  if (!userToken) {
+    showSection("authSection");
+    switchAuthTab(currentAuthTab || "login");
+    return;
+  }
+
+  showSection("profileSection");
+  loadProfile().then(() => {
+    if (page === "history") {
+      openHistorySection();
+      return;
+    }
+
+    if (page === "data") {
+      openPreferencesModal();
+      return;
+    }
+
+    if (page === "feedback") {
+      openFeedbackSection();
+      return;
+    }
+
+    if (page === "cabinet" || page === "match") {
+      openMatchSection();
+      return;
+    }
+  });
+}
+
+
+
+function normalizeSavedPage(page) {
+  if (page === "history") {
+    return "match";
+  }
+
+  return page;
+}
+
+function setCurrentPage(page) {
+  page = normalizeSavedPage(page);
+  page = normalizeSavedPage(page);
+  localStorage.setItem("currentPage", page);
+
+  const hashMap = {
+    auth: "#auth",
+    cabinet: "#cabinet",
+    match: "#match",
+    history: "#history",
+    data: "#data",
+    feedback: "#feedback",
+    about: "#about",
+    instruction: "#instruction",
+    admin: "#admin"
+  };
+
+  if (hashMap[page]) {
+    history.replaceState(null, "", hashMap[page]);
+  }
+}
+
+function restoreCurrentPageFromStorage() {
+  const page = normalizeSavedPage(localStorage.getItem("currentPage") || "");
+  const hash = window.location.hash || "";
+
+  const target = normalizeSavedPage(hash.replace("#", "") || page);
+
+  if (target === "about") {
+    openPublicAbout();
+    return;
+  }
+
+  if (target === "instruction") {
+    openPublicInstruction();
+    return;
+  }
+
+  if (target === "admin") {
+    openAdminPageOnly();
+    return;
+  }
+
+  if (!userToken) {
+    showSection("authSection");
+    return;
+  }
+
+  openCabinetOrAuth();
+
+  setTimeout(() => {
+    if (target === "history") {
+      openHistorySection();
+    } else if (target === "data") {
+      openPreferencesModal();
+    } else if (target === "feedback") {
+      openFeedbackSection();
+    } else {
+      openMatchSection();
+    }
+  }, 150);
+}
+
+function showSection(id) {
+  const sections = ["authSection", "profileSection", "resetSection", "publicSection"];
+
+  for (const sectionId of sections) {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.classList.add("hidden");
+    }
+  }
+
+  const target = document.getElementById(id);
+  if (target) {
+    target.classList.remove("hidden");
+  }
+}
+
+function switchAuthTab(tabName) {
+  currentAuthTab = tabName;
+  localStorage.setItem("currentAuthTab", tabName);
+
+  const tabs = ["login", "register", "forgot"];
+
+  for (const tab of tabs) {
+    const content = document.getElementById(tab + "Tab");
+    const button = document.getElementById(tab + "TabButton");
+
+    if (content) {
+      content.classList.toggle("hidden", tab !== tabName);
+    }
+
+    if (button) {
+      button.classList.toggle("active", tab === tabName);
+    }
+  }
+
+  if (tabName === "forgot") {
+    const loginButton = document.getElementById("loginTabButton");
+    const registerButton = document.getElementById("registerTabButton");
+
+    if (loginButton) loginButton.classList.remove("active");
+    if (registerButton) registerButton.classList.remove("active");
+  }
+}
+
+function showNotice(id, text, isError = false) {
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.classList.remove("hidden");
+  el.classList.toggle("error", isError);
+}
+
+function adminHeaders() {
+  return { "X-Admin-Password": adminPassword };
+}
+
+function userHeaders() {
+  return { "X-User-Token": userToken };
+}
+
+function scrollToAdmin() {
+  const adminSection = document.getElementById("adminSection");
+
+  if (adminSection) {
+    adminSection.classList.remove("hidden");
+    adminSection.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+async function downloadAdminFile(url, filename) {
+  if (!adminPassword) {
+    adminPassword = document.getElementById("adminPassword")?.value || "";
+  }
+
+  if (!adminPassword) {
+    alert("Сначала введи пароль администратора.");
+    scrollToAdmin();
+    return;
+  }
+
+  const response = await fetch(url, {
+    headers: adminHeaders()
+  });
+
+  if (!response.ok) {
+    alert(await parseError(response));
+    return;
+  }
+
+  const blob = await response.blob();
+  const objectUrl = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = objectUrl;
+  link.download = filename;
+  link.click();
+
+  URL.revokeObjectURL(objectUrl);
+}
+
+function exportUsersExcel() {
+  downloadAdminFile("/api/export/users.xlsx", "random-coffee-users.xlsx");
+}
+
+function exportPairsExcel() {
+  downloadAdminFile("/api/export/pairs.xlsx", "random-coffee-pairs.xlsx");
+}
+
+async function parseError(response) {
+  try {
+    const data = await response.json();
+    return data.detail || "Ошибка";
+  } catch {
+    return "Ошибка";
+  }
+}
+
+function initFromHash() {
+  const hash = window.location.hash || "";
+
+  if (hash === "#admin") {
+    openAdminPage();
+    return true;
+  }
+
+  if (hash.startsWith("#reset-password")) {
+    const query = hash.includes("?") ? hash.substring(hash.indexOf("?") + 1) : "";
+    const params = new URLSearchParams(query);
+    resetToken = params.get("token") || "";
+    showSection("resetSection");
+    return true;
+  }
+
+  return false;
+}
+
+document.getElementById("registrationForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const payload = {
+    full_name: document.getElementById("fullName").value.trim(),
+    email: document.getElementById("email").value.trim(),
+    password: document.getElementById("password").value,
+    department: document.getElementById("department").value.trim(),
+    city: document.getElementById("city").value.trim(),
+    interests: document.getElementById("interests").value.trim()
+  };
+
+  const response = await fetch("/api/users", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+
+  if (!response.ok) {
+    showNotice("registrationNotice", await parseError(response), true);
+    return;
+  }
+
+  showNotice("registrationNotice", "✅ Анкета успешно заполнена. Теперь можно войти в личный кабинет.");
+  event.target.reset();
+});
+
+async function loginUser() {
+  const email = document.getElementById("loginEmail").value.trim();
+  const password = document.getElementById("loginPassword").value;
+
+  if (!email || !password) {
+    showNotice("loginNotice", "Введите логин и пароль", true);
+    return;
+  }
+
+  const response = await fetch("/api/auth/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      email: email,
+      password: password
+    })
+  });
+
+  if (!response.ok) {
+    showNotice("loginNotice", await parseError(response), true);
+    return;
+  }
+
+  const data = await response.json();
+  userToken = data.token;
+  localStorage.setItem("userToken", userToken);
+  updateHeaderAuthState();
+
+  showNotice("loginNotice", "✅ Вход выполнен.");
+  showSection("profileSection");
+  await loadProfile();
+}
+
+async function requestPasswordReset() {
+  const email = document.getElementById("forgotEmail").value.trim();
+
+  if (!email) {
+    showNotice("forgotNotice", "Укажи email.", true);
+    return;
+  }
+
+  const response = await fetch("/api/auth/forgot-password", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email })
+  });
+
+  if (!response.ok) {
+    showNotice("forgotNotice", await parseError(response), true);
+    return;
+  }
+
+  const data = await response.json();
+  showNotice("forgotNotice", data.message || "Письмо отправлено.");
+}
+
+async function resetPassword() {
+  const newPassword = document.getElementById("newPassword").value;
+
+  if (!resetToken) {
+    showNotice("resetNotice", "Токен смены пароля не найден. Запроси письмо ещё раз.", true);
+    return;
+  }
+
+  if (!newPassword || newPassword.length < 4) {
+    showNotice("resetNotice", "Пароль должен быть не короче 4 символов.", true);
+    return;
+  }
+
+  const response = await fetch("/api/auth/reset-password", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token: resetToken, new_password: newPassword })
+  });
+
+  if (!response.ok) {
+    showNotice("resetNotice", await parseError(response), true);
+    return;
+  }
+
+  window.location.hash = "";
+  resetToken = "";
+  localStorage.removeItem("userToken");
+  setCurrentPage("auth");
+  showNotice("resetNotice", "✅ Пароль успешно изменён. Теперь можно войти с новым паролем.");
+}
+
+async function loadProfile() {
+  closeAdminPage();
+  document.body.classList.remove("admin-page-open");
+  setActiveSidebar("menuMatch");
+
+  const container = document.getElementById("profileContent");
+
+  if (!userToken) {
+    container.innerHTML = "Войди, чтобы увидеть профиль и свою пару.";
+    document.getElementById("topUserName").textContent = "Гость";
+    return;
+  }
+
+  const meResponse = await fetch("/api/me", { headers: userHeaders() });
+
+  if (!meResponse.ok) {
+    container.innerHTML = "Сессия истекла или пользователь удалён. Войди заново.";
+    document.getElementById("topUserName").textContent = "Гость";
+    logoutUser(false);
+    return;
+  }
+
+  const me = await meResponse.json();
+  document.getElementById("topUserName").textContent = me.full_name || "Пользователь";
+  window.currentUserInterests = me.interests || "Интересы не указаны";
+  window.currentUser = me;
+  currentUser = me;
+
+  const pairResponse = await fetch("/api/me/pair", { headers: userHeaders() });
+  const pairData = await pairResponse.json();
+  window.currentPairData = pairData;
+
+  let pairContent = `
+    <div class="profile-main-card">
+      <h2>Моя пара</h2>
+      <p>Пара ещё не назначена. Когда администратор создаст пары, информация появится здесь.</p>
+      <div class="feedback-box">
+        <div>☕ Ожидайте назначения новой кофейной встречи.</div>
+        <button class="secondary" onclick="loadProfile()">Обновить</button>
+      </div>
+    </div>
+  `;
+
+  if (pairData.has_pair) {
+    const p = pairData.partner;
+    const meetingTime = pairData.pair.meeting_time || "Время встречи не назначено";
+
+    pairContent = `
+      <div class="profile-main-card">
+        <h2>Моя пара</h2>
+        <p>Ваша новая кофейная встреча назначена!</p>
+
+        <div class="pair-hero-card">
+          <div class="pair-person">
+            <div class="person-photo">${getAnimalAvatar(me, 0)}</div>
+            <div>
+              <h3>${me.full_name}</h3>
+              <div>${me.department}</div>
+              <div>${me.city}</div>
+            </div>
+          </div>
+
+          <div class="coffee-center">${SVG_COFFEE}</div>
+
+          <div class="pair-person">
+            <div class="person-photo">${getAnimalAvatar(p, 2)}</div>
+            <div>
+              <h3>${p.full_name}</h3>
+              <div>${p.department}</div>
+              <div>${p.city}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="meeting-details">
+          <div class="detail-grid">
+            <div class="detail-row">
+              <div class="detail-label">☕Дата и время встречи</div>
+              <div class="detail-value">${meetingTime}</div>
+            </div>
+
+            <div class="detail-row">
+              <div class="detail-label">☕Контакт пары</div>
+              <div class="detail-value">${p.email}</div>
+            </div>
+
+            <div class="detail-row">
+              <div class="detail-label">☕Интересы</div>
+              <div class="detail-value">${p.interests}</div>
+            </div>
+          </div>
+
+          <div class="detail-actions">
+            <a class="primary" style="text-align:center; text-decoration:none;" href="mailto:${p.email}">✉️ Написать</a>
+            <button class="secondary" onclick="downloadMyIcs()">📅 Добавить в календарь</button>
+          </div>
+        </div>
+
+        <div class="feedback-box">
+          <div>Не забудьте поделиться впечатлениями после встречи!</div>
+          <button class="secondary" type="button" onclick="openFeedbackSection()">Оставить отзыв</button>
+        </div>
+      </div>
+    `;
+  }
+
+  container.innerHTML = `
+    <div class="profile-layout">
+      <aside class="profile-sidebar">
+        <div class="profile-avatar">${userPhotoHtml(me)}</div>
+        <div class="welcome-small">Добро пожаловать,</div>
+        <div class="welcome-name">${me.full_name}!</div>
+        <div class="welcome-text">
+          Рады видеть вас в проекте<br>
+          <strong>Random Coffee ☕</strong>
+        </div>
+
+        <div class="side-menu">
+          <div id="menuMatch" class="side-menu-item active" onclick="openMatchSection()"><span class="side-icon">${ICON_PAIR}</span>Моя пара</div>
+          <div id="menuHistory" class="side-menu-item hidden" onclick="openHistorySection()"></div>
+          <div id="menuPreferences" class="side-menu-item" onclick="openPreferencesModal()">
+            <span class="side-icon">${ICON_PREFS}</span>
+            <div>
+              <div>Мои данные</div>
+<div style="font-size:12px;color:#7a7a7a;margin-top:4px;">
+                Интересы и темы для общения
+              </div>
+            </div>
+          </div>
+          <div id="menuFeedback" class="side-menu-item" onclick="openFeedbackSection()"><span class="side-icon">${ICON_FEEDBACK}</span>Обратная связь</div>
+          <div id="menuInstruction" class="side-menu-item" onclick="openInstructionSection()"><span class="side-icon">${ICON_HELP}</span>Инструкция</div>
+        </div>
+      </aside>
+
+      <div id="mainContentArea">
+        ${pairContent}
+      </div>
+    </div>
+  `;
+}
+
+
+
+
+
+const ANIMAL_AVATARS = [
+  `<svg class="animal-profile-svg" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <circle cx="80" cy="80" r="78" fill="#eef4e8"/>
+    <circle cx="55" cy="48" r="22" fill="#9db487"/>
+    <circle cx="105" cy="48" r="22" fill="#9db487"/>
+    <circle cx="80" cy="88" r="48" fill="#c7d8b4"/>
+    <circle cx="63" cy="82" r="6" fill="#2f3b2a"/>
+    <circle cx="97" cy="82" r="6" fill="#2f3b2a"/>
+    <ellipse cx="80" cy="99" rx="10" ry="7" fill="#526a43"/>
+    <path d="M80 106c-5 8-15 9-21 3M80 106c5 8 15 9 21 3" fill="none" stroke="#526a43" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="52" cy="96" r="7" fill="#e7b9a8" opacity=".8"/>
+    <circle cx="108" cy="96" r="7" fill="#e7b9a8" opacity=".8"/>
+  </svg>`,
+
+  `<svg class="animal-profile-svg" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <circle cx="80" cy="80" r="78" fill="#fff4e8"/>
+    <path d="M43 55 34 22l34 20M117 55l9-33-34 20" fill="#d88a42" stroke="#9a5a28" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M38 76c7-32 30-48 42-48s35 16 42 48c7 34-14 58-42 58S31 110 38 76z" fill="#d88a42"/>
+    <path d="M50 84c8 26 20 39 30 39s22-13 30-39c-11 10-20 14-30 14s-19-4-30-14z" fill="#fff"/>
+    <circle cx="63" cy="78" r="6" fill="#2f2a25"/>
+    <circle cx="97" cy="78" r="6" fill="#2f2a25"/>
+    <path d="M73 95h14l-7 9z" fill="#2f2a25"/>
+  </svg>`,
+
+  `<svg class="animal-profile-svg" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <circle cx="80" cy="80" r="78" fill="#f3f6ef"/>
+    <path d="M58 58C43 28 46 8 58 8s21 22 19 52M102 58c15-30 12-50 0-50S81 30 83 60" fill="#e6dfd3" stroke="#8fa47d" stroke-width="4"/>
+    <circle cx="80" cy="91" r="46" fill="#eee7dc"/>
+    <circle cx="64" cy="85" r="6" fill="#2f2a25"/>
+    <circle cx="96" cy="85" r="6" fill="#2f2a25"/>
+    <ellipse cx="80" cy="100" rx="9" ry="6" fill="#d7a5a2"/>
+    <path d="M80 107c-5 8-14 8-20 2M80 107c5 8 14 8 20 2" fill="none" stroke="#8fa47d" stroke-width="4" stroke-linecap="round"/>
+  </svg>`,
+
+  `<svg class="animal-profile-svg" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <circle cx="80" cy="80" r="78" fill="#f5efe4"/>
+    <path d="M43 48l-8-28 29 13M117 48l8-28-29 13" fill="#d9c4a6" stroke="#8c7657" stroke-width="4" stroke-linejoin="round"/>
+    <circle cx="80" cy="86" r="50" fill="#e5cfad"/>
+    <circle cx="62" cy="82" r="6" fill="#2f2a25"/>
+    <circle cx="98" cy="82" r="6" fill="#2f2a25"/>
+    <path d="M73 98h14l-7 8z" fill="#8c7657"/>
+    <path d="M80 107c-6 8-16 8-22 1M80 107c6 8 16 8 22 1" fill="none" stroke="#8c7657" stroke-width="4" stroke-linecap="round"/>
+    <path d="M48 100h-20M50 110H30M112 100h20M110 110h20" stroke="#8c7657" stroke-width="3" stroke-linecap="round"/>
+  </svg>`
+];
+
+function getAnimalAvatar(user, forceIndex = null) {
+  if (typeof forceIndex === "number") {
+    return ANIMAL_AVATARS[Math.abs(forceIndex) % ANIMAL_AVATARS.length];
+  }
+
+  const value = String((user && (user.email || user.full_name || user.id)) || "default");
+  let hash = 0;
+
+  for (let i = 0; i < value.length; i++) {
+    hash = ((hash << 5) - hash) + value.charCodeAt(i);
+    hash |= 0;
+  }
+
+  return ANIMAL_AVATARS[Math.abs(hash) % ANIMAL_AVATARS.length];
+}
+
+function userPhotoHtml(user) {
+  const photoUrl = user && user.photo_url ? `${user.photo_url}?v=${Date.now()}` : "";
+
+  if (photoUrl) {
+    return `<img class="profile-photo-img" src="${photoUrl}" alt="Фото профиля">`;
+  }
+
+  return SVG_USER_AVATAR;
+}
+
+function readFileAsDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(reader.error);
+
+    reader.readAsDataURL(file);
+  });
+}
+
+async function uploadProfilePhoto() {
+  const input = document.getElementById("profilePhotoInput");
+
+  if (!input || !input.files || !input.files[0]) {
+    showNotice("profileEditNotice", "Выберите фотографию", true);
+    return;
+  }
+
+  const dataUrl = await readFileAsDataUrl(input.files[0]);
+
+  const response = await fetch("/api/me/photo", {
+    method: "POST",
+    headers: {
+      ...userHeaders(),
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ data_url: dataUrl })
+  });
+
+  if (!response.ok) {
+    showNotice("profileEditNotice", await parseError(response), true);
+    return;
+  }
+
+  const data = await response.json();
+
+  if (!window.currentUser) {
+    window.currentUser = {};
+  }
+
+  window.currentUser.photo_url = data.photo_url;
+  currentUser = window.currentUser;
+
+  const preview = document.getElementById("profilePhotoPreview");
+
+  if (preview) {
+    preview.innerHTML = userPhotoHtml(window.currentUser);
+  }
+
+  showNotice("profileEditNotice", "Фото обновлено.");
+}
+
+function setActiveSidebar(menuId) {
+  const items = document.querySelectorAll(".side-menu-item");
+
+  items.forEach(item => {
+    item.classList.remove("active");
+  });
+
+  const activeItem = document.getElementById(menuId);
+
+  if (activeItem) {
+    activeItem.classList.add("active");
+  }
+}
+
+
+function openMatchSection() {
+  setCurrentPage("match");
+  closeAdminPage();
+  setActiveSidebar("menuMatch");
+  loadProfile();
+}
+
+
+function openHistorySection() {
+  setCurrentPage("history");
+  closeAdminPage();
+  setActiveSidebar("menuHistory");
+
+  const content = document.getElementById("mainContentArea");
+
+  if (!content) {
+    return;
+  }
+
+  const currentPair = window.currentPairData || null;
+  const partner = currentPair && currentPair.partner ? currentPair.partner : null;
+  const pair = currentPair && currentPair.pair ? currentPair.pair : null;
+
+  let historyHtml = `
+    <div class="meeting-details">
+      <div class="detail-grid">
+        <div class="detail-row">
+          <div class="detail-label">☕История встреч</div>
+          <div class="detail-value">Пока нет завершённых встреч.</div>
+        </div>
+      </div>
+
+      <div class="detail-actions">
+        <button class="secondary" onclick="openMatchSection()">← Моя пара</button>
+      </div>
+    </div>
+  `;
+
+  if (partner && pair) {
+    historyHtml = `
+      <div class="meeting-details">
+        <div class="detail-grid">
+          <div class="detail-row">
+            <div class="detail-label">☕Последняя назначенная встреча</div>
+            <div class="detail-value">${pair.meeting_time || "Время встречи не назначено"}</div>
+          </div>
+
+          <div class="detail-row">
+            <div class="detail-label">☕Собеседник</div>
+            <div class="detail-value">
+              ${partner.full_name}<br>
+              ${partner.email}<br>
+              ${partner.department}, ${partner.city}
+            </div>
+          </div>
+
+          <div class="detail-row">
+            <div class="detail-label">☕Интересы собеседника</div>
+            <div class="detail-value">${partner.interests || "Не указаны"}</div>
+          </div>
+        </div>
+
+        <div class="detail-actions">
+          <button class="secondary" onclick="downloadMyIcs()">📅 Скачать календарь</button>
+          <button class="secondary" onclick="openMatchSection()">← Моя пара</button>
+        </div>
+      </div>
+    `;
+  }
+
+  content.innerHTML = `
+    <div class="profile-main-card">
+      <h2>История встреч</h2>
+      <p>Здесь отображаются ваши Random Coffee встречи.</p>
+
+      ${historyHtml}
+
+      <div class="feedback-box">
+        <div style="display:flex;align-items:center;gap:14px;">
+          ${SVG_LEAF}
+          <span>В текущей версии отображается последняя назначенная встреча. Полную историю можно расширить отдельной таблицей в базе.</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+
+function openPublicAbout() {
+  setCurrentPage("about");
+  closeAdminPage();
+  document.body.classList.remove("admin-page-open");
+  const profile = document.getElementById("profileSection");
+  const auth = document.getElementById("authSection");
+
+  if (profile) {
+    profile.classList.remove("hidden");
+  }
+
+  if (auth) {
+    auth.classList.add("hidden");
+  }
+
+  const container = document.getElementById("mainContentArea");
+
+  if (!container) {
+    openAboutSection();
+    return;
+  }
+
+  openAboutSection();
+}
+
+function openPublicInstruction() {
+  setCurrentPage("instruction");
+  closeAdminPage();
+  document.body.classList.remove("admin-page-open");
+  const profile = document.getElementById("profileSection");
+  const auth = document.getElementById("authSection");
+
+  if (profile) {
+    profile.classList.remove("hidden");
+  }
+
+  if (auth) {
+    auth.classList.add("hidden");
+  }
+
+  openInstructionSection();
+}
+
+
+
+function exitAdminPage() {
+  setCurrentPage("admin");
+  adminPassword = "";
+  localStorage.removeItem("adminPassword");
+
+  const adminLogin = document.getElementById("adminLogin");
+  const adminControls = document.getElementById("adminControls");
+  const btn = document.getElementById("adminExitBtn");
+  const passwordInput = document.getElementById("adminPassword");
+
+  if (adminLogin) adminLogin.classList.remove("hidden");
+  if (adminControls) adminControls.classList.add("hidden");
+  if (btn) btn.classList.add("hidden");
+  if (passwordInput) passwordInput.value = "";
+}
+
+function openProfileEdit() {
+  const content = document.getElementById("mainContentArea");
+
+  if (!content || !currentUser) {
+    return;
+  }
+
+  content.innerHTML = `
+    <div class="profile-main-card">
+      <h2>Редактирование профиля</h2>
+      <p>Измените свои данные</p>
+
+      <div class="simple-wide-card">
+        <div class="profile-edit-grid">
+          <div>
+            <label>Имя</label>
+            <input id="editFullName" value="${currentUser.full_name || ""}">
+          </div>
+
+          <div>
+            <label>Email</label>
+            <input id="editEmail" value="${currentUser.email || ""}">
+          </div>
+
+          <div>
+            <label>Город</label>
+            <input id="editCity" value="${currentUser.city || ""}">
+          </div>
+
+          <div>
+            <label>Отдел</label>
+            <input id="editDepartment" value="${currentUser.department || ""}">
+          </div>
+
+          <div style="grid-column:1/-1;">
+            <label>Интересы</label>
+            <textarea id="editInterests">${currentUser.interests || ""}</textarea>
+          </div>
+        </div>
+
+        <div style="margin-top:24px;">
+          <button class="primary" onclick="saveProfileChanges()">Сохранить</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+async function saveProfileChanges() {
+  const payload = {
+    full_name: document.getElementById("editFullName").value,
+    email: document.getElementById("editEmail").value,
+    city: document.getElementById("editCity").value,
+    department: document.getElementById("editDepartment").value,
+    interests: document.getElementById("editInterests").value
+  };
+
+  const response = await fetch("/api/me", {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      ...userHeaders()
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (!response.ok) {
+    alert("Ошибка сохранения");
+    return;
+  }
+
+  const updated = await response.json();
+
+  currentUser = updated;
+  window.currentUser = updated;
+  window.currentUserInterests = updated.interests;
+
+  alert("Данные сохранены");
+}
+
+function closeAdminPage() {
+  document.body.classList.remove("admin-page-open");
+
+  const admin = document.getElementById("adminSection");
+
+  if (admin) {
+    admin.classList.add("hidden");
+    admin.classList.remove("admin-page-wrapper");
+  }
+}
+
+
+function openAdminPageOnly() {
+  setCurrentPage("admin");
+  const auth = document.getElementById("authSection");
+  const profile = document.getElementById("profileSection");
+  const publicSection = document.getElementById("publicSection");
+  const reset = document.getElementById("resetSection");
+  const admin = document.getElementById("adminSection");
+
+  if (auth) auth.classList.add("hidden");
+  if (profile) profile.classList.add("hidden");
+  if (publicSection) {
+    publicSection.classList.add("hidden");
+    publicSection.innerHTML = "";
+  }
+  if (reset) reset.classList.add("hidden");
+
+  if (admin) {
+    admin.classList.remove("hidden");
+    admin.classList.add("admin-page-wrapper");
+  }
+
+  document.body.classList.add("admin-page-open");
+  window.location.hash = "#admin";
+
+  const btn = document.getElementById("adminExitBtn");
+  const adminLogin = document.getElementById("adminLogin");
+  const adminControls = document.getElementById("adminControls");
+
+  if (adminPassword) {
+    if (adminLogin) adminLogin.classList.add("hidden");
+    if (adminControls) adminControls.classList.remove("hidden");
+    if (btn) btn.classList.remove("hidden");
+    loadAdminData();
+  } else {
+    if (adminLogin) adminLogin.classList.remove("hidden");
+    if (adminControls) adminControls.classList.add("hidden");
+    if (btn) btn.classList.add("hidden");
+  }
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function openAdminPage() {
+  openAdminPageOnly();
+}
+
+
+function renderPublicPage(title, subtitle, contentHtml) {
+  closeAdminPage();
+  document.body.classList.remove("admin-page-open");
+
+  const auth = document.getElementById("authSection");
+  const profile = document.getElementById("profileSection");
+  const publicSection = document.getElementById("publicSection");
+
+  if (auth) {
+    auth.classList.add("hidden");
+  }
+
+  if (profile) {
+    profile.classList.add("hidden");
+  }
+
+  if (!publicSection) {
+    return;
+  }
+
+  publicSection.classList.remove("hidden");
+  publicSection.innerHTML = `
+    <div class="card" style="max-width:1200px;margin:40px auto;padding:40px;">
+      <h2>${title}</h2>
+      <p>${subtitle}</p>
+      ${contentHtml}
+    </div>
+  `;
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function openPublicAbout() {
+  renderPublicPage(
+    "О проекте",
+    "Random Coffee — сервис знакомств и общения между коллегами.",
+    `
+      <div class="simple-wide-card">
+        <div class="simple-row">
+          <div class="simple-title">🤝 Цель проекта</div>
+          <div class="simple-text">
+            Помочь сотрудникам знакомиться и общаться между отделами.
+          </div>
+        </div>
+
+        <div class="simple-row">
+          <div class="simple-title">☕ Формат</div>
+          <div class="simple-text">
+            Система случайным образом подбирает пары для коротких кофе-встреч.
+          </div>
+        </div>
+
+        <div class="simple-row">
+          <div class="simple-title">💬 Общение</div>
+          <div class="simple-text">
+            Вы сможете познакомиться с коллегами, узнать их интересы и расширить круг общения.
+          </div>
+        </div>
+      </div>
+    `
+  );
+}
+
+function openPublicInstruction() {
+  const rows = [
+    ["⚙️","Как это работает","Сервис случайным образом создаёт пары сотрудников."],
+    ["📝","После регистрации","После регистрации вы автоматически участвуете в подборе."],
+    ["❤️","Где смотреть пару","Информация о собеседнике отображается в личном кабинете."],
+    ["🗓️","Календарь","Встречу можно добавить в Outlook."],
+    
+    ["🎯","Предпочтения","Интересы помогают подобрать темы для общения."],
+    ["🤝","Советы","Будьте открыты и уважайте время собеседника."]
+  ];
+
+  renderPublicPage(
+    "Как это работает",
+    "Инструкция по использованию сервиса",
+    `
+      <table class="instruction-table">
+        <tbody>
+          ${rows.map(r => `
+            <tr>
+              <td style="width:90px;">
+                <div class="instruction-step-icon">${r[0]}</div>
+              </td>
+              <td style="width:320px;"><strong>${r[1]}</strong></td>
+              <td>${r[2]}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    `
+  );
+}
+
+function openAboutSection() {
+  closeAdminPage();
+  document.body.classList.remove("admin-page-open");
+  setActiveSidebar("");
+
+  const content = document.getElementById("mainContentArea");
+
+  if (!content) {
+    return;
+  }
+
+  content.innerHTML = `
+    <div class="profile-main-card">
+      <h2>О проекте</h2>
+      <p>Random Coffee — сервис для коротких неформальных встреч с коллегами.</p>
+
+      <div class="simple-wide-card">
+        <div class="simple-row">
+          <div class="simple-title">☕Цель проекта</div>
+          <div class="simple-text">
+            Помочь сотрудникам знакомиться, общаться с людьми из разных отделов,
+            обмениваться опытом и лучше понимать, чем живут другие команды.
+          </div>
+        </div>
+
+        <div class="simple-row">
+          <div class="simple-title">☕Как создаются пары</div>
+          <div class="simple-text">
+            Система случайным образом создаёт пары участников. После назначения пары
+            в личном кабинете появляется информация о собеседнике, его интересах и времени встречи.
+          </div>
+        </div>
+
+        <div class="simple-row">
+          <div class="simple-title">☕Формат встречи</div>
+          <div class="simple-text">
+            Встреча рассчитана на 15–30 минут. Это может быть короткий созвон,
+            кофе-брейк или личная встреча, если участникам удобно встретиться очно.
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function openFeedbackSection() {
+  setCurrentPage("feedback");
+  closeAdminPage();
+  setActiveSidebar("menuFeedback");
+
+  const content = document.getElementById("mainContentArea");
+
+  if (!content) {
+    return;
+  }
+
+  content.innerHTML = `
+    <div class="profile-main-card">
+      <h2>Обратная связь</h2>
+      <p>Оставьте отзыв о сервисе или о прошедшей встрече.</p>
+
+      <div class="simple-wide-card">
+        <div class="simple-row">
+          <div class="simple-title">☕Ваш отзыв</div>
+          <textarea id="feedbackText" class="simple-textarea" placeholder="Напишите, что понравилось, что можно улучшить или какие идеи есть по проекту"></textarea>
+
+          <div style="margin-top:16px;">
+            <button class="primary" onclick="sendFeedback()">Отправить отзыв</button>
+            <div id="feedbackNotice" class="notice hidden"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function openInstructionSection() {
+  closeAdminPage();
+  document.body.classList.remove("admin-page-open");
+  setActiveSidebar("menuInstruction");
+
+  const content = document.getElementById("mainContentArea");
+
+  if (!content) {
+    return;
+  }
+
+  const steps = [
+    ["⚙️", "Как это работает", "Random Coffee помогает знакомиться и общаться с коллегами из разных отделов."],
+    ["📝", "После регистрации", "После регистрации система автоматически подберёт вам случайного собеседника."],
+    ["❤️", "Где смотреть пару", "Вся информация о встрече отображается в разделе «Моя пара»."],
+    ["🗓️", "Outlook и календарь", "Вы можете добавить встречу в Outlook через кнопку «Добавить в календарь»."],
+    
+    ["🎯", "Мои данные", "В разделе «Мои данные» отображаются интересы, указанные при регистрации."],
+    ["🤝", "Советы для встречи", "Будьте открыты, уважайте время друг друга и наслаждайтесь общением."]
+  ];
+
+  content.innerHTML = `
+    <div class="profile-main-card">
+      <h2>Инструкция</h2>
+      <p>Как пользоваться Random Coffee ☕</p>
+
+      <table class="instruction-table">
+        
+        <tbody>
+          ${steps.map((s) => `
+            <tr>
+              <td>
+                <div class="instruction-step-icon">${s[0]}</div>
+              </td>
+              <td><strong>${s[1]}</strong></td>
+              <td>${s[2]}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+
+function openPreferencesModal() {
+  setCurrentPage("data");
+  setActiveSidebar("menuPreferences");
+
+  const content = document.getElementById("mainContentArea");
+
+  if (!content) {
+    return;
+  }
+
+  const interests = window.currentUserInterests || "Интересы не указаны";
+  const user = window.currentUser || currentUser || {};
+
+  content.innerHTML = `
+    <div class="profile-main-card">
+      <h2>Мои данные</h2>
+      <p>Здесь отображаются ваши данные и интересы.</p>
+
+      <div class="simple-wide-card">
+        <div class="simple-row">
+          <div class="simple-title">🎯 Мои интересы</div>
+          <div class="simple-text">${interests}</div>
+        </div>
+
+        <div class="simple-row">
+          <div class="simple-title">✏️ Редактировать профиль</div>
+
+          <div class="profile-edit-grid">
+            <div>
+              <label>Имя</label>
+              <input id="editFullName" value="${user.full_name || ""}">
+            </div>
+
+            <div>
+              <label>Email</label>
+              <input id="editEmail" value="${user.email || ""}">
+            </div>
+
+            <div>
+              <label>Город</label>
+              <input id="editCity" value="${user.city || ""}">
+            </div>
+
+            <div>
+              <label>Отдел</label>
+              <input id="editDepartment" value="${user.department || ""}">
+            </div>
+
+            <div style="grid-column:1/-1;">
+              <label>Интересы</label>
+              <textarea id="editInterests">${user.interests || ""}</textarea>
+            </div>
+          </div>
+
+          <div style="margin-top:24px;">
+            <button class="primary" onclick="saveProfileChanges()">Сохранить</button>
+            <div id="profileEditNotice" class="notice hidden"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+
+async function sendFeedback() {
+  const text = document.getElementById("feedbackText").value.trim();
+
+  if (!text) {
+    showNotice("feedbackNotice", "Введите текст отзыва", true);
+    return;
+  }
+
+  const response = await fetch("/api/feedback", {
+    method: "POST",
+    headers: {
+      ...userHeaders(),
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ text })
+  });
+
+  if (!response.ok) {
+    showNotice("feedbackNotice", await parseError(response), true);
+    return;
+  }
+
+  document.getElementById("feedbackText").value = "";
+  showNotice("feedbackNotice", "Спасибо! Отзыв отправлен.");
+}
+
+async function downloadMyIcs() {
+  const response = await fetch("/api/me/pair/ics", { headers: userHeaders() });
+
+  if (!response.ok) {
+    alert("Не удалось скачать .ics");
+    return;
+  }
+
+  const blob = await response.blob();
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "random-coffee.ics";
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+async function leaveMe() {
+  if (!userToken) {
+    alert("Сначала войди в личный кабинет.");
+    return;
+  }
+
+  if (!confirm("Точно выйти из Random Coffee?")) return;
+
+  const response = await fetch("/api/me", {
+    method: "DELETE",
+    headers: userHeaders()
+  });
+
+  if (!response.ok) {
+    alert(await parseError(response));
+    return;
+  }
+
+  logoutUser(false);
+  alert("❌ Ты вышел из Random Coffee.");
+}
+
+function logoutUser(showMessage = true) {
+  closeAdminPage();
+  userToken = "";
+      updateHeaderAuthState();
+  localStorage.removeItem("userToken");
+  updateHeaderAuthState();
+
+  const profile = document.getElementById("profileContent");
+  if (profile) {
+    profile.innerHTML = "Войди, чтобы увидеть профиль и свою пару.";
+  }
+
+  const topUserName = document.getElementById("topUserName");
+  if (topUserName) {
+    topUserName.textContent = "Гость";
+  }
+
+  switchAuthTab("login");
+  document.body.classList.remove("admin-page-open");
+  showSection("authSection");
+  const admin = document.getElementById("adminSection");
+  if (admin) { admin.classList.add("hidden"); admin.classList.remove("admin-page-wrapper"); }
+
+  const adminSection = document.getElementById("adminSection");
+  if (adminSection) {
+    adminSection.classList.add("hidden");
+  }
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+
+  if (showMessage) {
+    alert("Выход из аккаунта выполнен.");
+  }
+}
+
+async function loginAdmin() {
+  adminPassword = document.getElementById("adminPassword").value;
+  localStorage.setItem("adminPassword", adminPassword);
+
+  const testResponse = await fetch("/api/users", {
+    headers: adminHeaders()
+  });
+
+  if (!testResponse.ok) {
+    adminPassword = "";
+    localStorage.removeItem("adminPassword");
+    showNotice("adminLoginNotice", "Неверный пароль администратора", true);
+    return;
+  }
+
+  document.getElementById("adminLogin").classList.add("hidden");
+  document.getElementById("adminControls").classList.remove("hidden");
+
+  const btn = document.getElementById("adminExitBtn");
+  if (btn) {
+    btn.classList.remove("hidden");
+  }
+
+  await loadAdminData();
+}
+
+async function loadAdminData() {
+  await loadUsers();
+  await loadPairs();
+  await loadFeedbacks();
+}
+
+async function loadUsers() {
+  const response = await fetch("/api/users", { headers: adminHeaders() });
+
+  if (!response.ok) {
+    alert("Неверный пароль администратора");
+    document.getElementById("adminLogin").classList.remove("hidden");
+    document.getElementById("adminControls").classList.add("hidden");
+    return;
+  }
+
+  const users = await response.json();
+  const container = document.getElementById("usersList");
+
+  if (users.length === 0) {
+    container.innerHTML = `<p class="muted">Участников нет.</p>`;
+    return;
+  }
+
+  container.innerHTML = users.map((u, i) => `
+    <div class="item">
+      <strong>${i + 1}. ${u.full_name}</strong>
+      <div>📧 ${u.email}</div>
+      <div>🏢 ${u.department}</div>
+      <div>🌍 ${u.city}</div>
+      <div>🎯 ${u.interests}</div>
+    </div>
+  `).join("");
+}
+
+async function loadPairs() {
+  const response = await fetch("/api/pairs", { headers: adminHeaders() });
+
+  if (!response.ok) return;
+
+  const pairs = await response.json();
+  const container = document.getElementById("pairsList");
+
+  if (pairs.length === 0) {
+    container.innerHTML = `<p class="muted">Пары ещё не созданы.</p>`;
+    return;
+  }
+
+  container.innerHTML = pairs.map((p, i) => `
+    <div class="item">
+      <strong>${i + 1}. ${p.user1.full_name} ↔ ${p.user2.full_name}</strong>
+      <div>📧 ${p.user1.email} ↔ ${p.user2.email}</div>
+      <div>📅 Создано: ${p.created_at}</div>
+      <div>🕒 Время встречи: ${p.meeting_time || "не назначено"}</div>
+      <button class="secondary" onclick="downloadIcs(${p.id})">📅 Скачать Outlook .ics</button>
+    </div>
+  `).join("");
+}
+
+
+async function loadFeedbacks() {
+  const response = await fetch("/api/feedbacks", {
+    headers: adminHeaders()
+  });
+
+  if (!response.ok) {
+    return;
+  }
+
+  const feedbacks = await response.json();
+  const container = document.getElementById("feedbacksList");
+
+  if (!container) {
+    return;
+  }
+
+  if (feedbacks.length === 0) {
+    container.innerHTML = `<p class="muted">Отзывов пока нет.</p>`;
+    return;
+  }
+
+  container.innerHTML = feedbacks.map((item) => `
+    <div class="item">
+      <strong>${item.full_name || "Пользователь"}</strong>
+      <div>📧 ${item.email || ""}</div>
+      <div>🕒 ${item.created_at}</div>
+      <div style="margin-top:8px;">${item.text}</div>
+    </div>
+  `).join("");
+}
+
+function exportFeedbacksExcel() {
+  downloadAdminFile("/api/export/feedbacks.xlsx", "random-coffee-feedbacks.xlsx");
+}
+
+
+async function createPairs() {
+  const response = await fetch("/api/pairs/create", {
+    method: "POST",
+    headers: adminHeaders()
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    alert(data.detail || "Ошибка создания пар");
+    return;
+  }
+
+  alert(`Пары созданы: ${data.pairs_count}. Уведомления отправлены, если SMTP настроен.`);
+  await loadAdminData();
+}
+
+async function resetPairs() {
+  const response = await fetch("/api/pairs/reset", {
+    method: "POST",
+    headers: adminHeaders()
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    alert(data.detail || "Ошибка сброса пар");
+    return;
+  }
+
+  alert(`Пары сброшены: ${data.reset_count}. Уведомлено участников: ${data.notified_count}`);
+  await loadAdminData();
+}
+
+async function downloadIcs(pairId) {
+  const response = await fetch(`/api/pairs/${pairId}/ics`, {
+    headers: adminHeaders()
+  });
+
+  if (!response.ok) {
+    alert("Не удалось скачать .ics");
+    return;
+  }
+
+  const blob = await response.blob();
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "random-coffee.ics";
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+if (adminPassword) {
+  document.getElementById("adminPassword").value = adminPassword;
+}
+
+async function restoreSession() {
+  userToken = localStorage.getItem("userToken") || "";
+
+  updateHeaderAuthState();
+
+  restoreCurrentPageFromStorage();
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  updateHeaderAuthState();
+restoreSession();
+});
+</script>
+</body>
+</html>
