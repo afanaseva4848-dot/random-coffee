@@ -1,3 +1,4 @@
+import traceback
 import base64
 import hashlib
 import hmac
@@ -33,6 +34,15 @@ SMTP_USER = os.getenv("SMTP_USER", "")
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "")
 SMTP_FROM = os.getenv("SMTP_FROM", SMTP_USER)
 SMTP_USE_TLS = os.getenv("SMTP_USE_TLS", "true").lower() == "true"
+
+
+def safe_row_get(row, key, default=""):
+    try:
+        keys = row.keys()
+    except Exception:
+        return default
+    return row[key] if key in keys and row[key] is not None else default
+
 
 app = FastAPI(title="Mriya Random Coffee")
 
@@ -700,8 +710,8 @@ def get_my_pair(x_user_token: Optional[str] = Header(default=None)):
     if not row:
         return {"has_pair": False, "pair": None, "partner": None}
 
-    meeting_start = row["meeting_start"]
-    meeting_end = row["meeting_end"]
+    meeting_start = safe_row_get(row, "meeting_start")
+    meeting_end = safe_row_get(row, "meeting_end")
 
     if not meeting_start or not meeting_end:
         meeting_start, meeting_end = default_meeting_times()
@@ -907,9 +917,9 @@ def get_pairs(x_admin_password: Optional[str] = Header(default=None)):
         result.append({
             "id": row["id"],
             "created_at": row["created_at"],
-            "meeting_start": row["meeting_start"],
-            "meeting_end": row["meeting_end"],
-            "meeting_time": format_meeting_time(row["meeting_start"], row["meeting_end"]),
+            "meeting_start": safe_row_get(row, "meeting_start"),
+            "meeting_end": safe_row_get(row, "meeting_end"),
+            "meeting_time": format_meeting_time(safe_row_get(row, "meeting_start"), safe_row_get(row, "meeting_end")),
             "user1": row_to_user(row, "u1"),
             "user2": row_to_user(row, "u2")
         })
@@ -1157,8 +1167,8 @@ def download_ics(pair_id: int, x_admin_password: Optional[str] = Header(default=
         row["user1_email"],
         row["user2_name"],
         row["user2_email"],
-        row["meeting_start"],
-        row["meeting_end"],
+        safe_row_get(row, "meeting_start"),
+        safe_row_get(row, "meeting_end"),
     )
 
     return Response(
@@ -1198,8 +1208,8 @@ def download_my_ics(x_user_token: Optional[str] = Header(default=None)):
         row["user1_email"],
         row["user2_name"],
         row["user2_email"],
-        row["meeting_start"],
-        row["meeting_end"],
+        safe_row_get(row, "meeting_start"),
+        safe_row_get(row, "meeting_end"),
     )
 
     return Response(
@@ -1227,7 +1237,7 @@ def export_users_excel(x_admin_password: Optional[str] = Header(default=None)):
             row["city"],
             row["interests"],
             row["created_at"],
-            format_meeting_time(row["meeting_start"], row["meeting_end"]),
+            format_meeting_time(safe_row_get(row, "meeting_start"), safe_row_get(row, "meeting_end")),
         ]
         for row in rows
     ]
@@ -1283,7 +1293,7 @@ def export_pairs_excel(x_admin_password: Optional[str] = Header(default=None)):
             row["user2_department"],
             row["user2_city"],
             row["created_at"],
-            format_meeting_time(row["meeting_start"], row["meeting_end"]),
+            format_meeting_time(safe_row_get(row, "meeting_start"), safe_row_get(row, "meeting_end")),
         ]
         for row in rows
     ]
