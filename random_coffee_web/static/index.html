@@ -3003,62 +3003,56 @@ restoreSession();
 });
 </script>
 
+
 <script>
 (function () {
-  async function randomCoffeeCreatePairsFromUi(event) {
+  function showAdminActionMessage(button, text, isError) {
+    let message = document.getElementById("admin-action-status-message");
+    if (!message) {
+      message = document.createElement("div");
+      message.id = "admin-action-status-message";
+      message.style.margin = "12px 0";
+      message.style.padding = "12px 14px";
+      message.style.borderRadius = "12px";
+      message.style.fontSize = "14px";
+      message.style.color = "#1f2937";
+
+      const panel = button && button.closest ? button.closest(".admin-panel, .admin-card, section, div") : null;
+      const parent = panel || (button && button.parentNode) || document.body;
+      parent.insertBefore(message, parent.children.length > 1 ? parent.children[1] : parent.firstChild);
+    }
+
+    message.style.background = isError ? "#fff1f2" : "#ecfdf5";
+    message.style.border = isError ? "1px solid #fecdd3" : "1px solid #a7f3d0";
+    message.textContent = text;
+  }
+
+  async function forceCreatePairs(event) {
     if (event) {
       event.preventDefault();
       event.stopPropagation();
     }
 
-    var message = document.getElementById("pair-create-status-message");
-    if (!message) {
-      message = document.createElement("div");
-      message.id = "pair-create-status-message";
-      message.style.margin = "12px 0";
-      message.style.padding = "12px 14px";
-      message.style.borderRadius = "12px";
-      message.style.background = "#eef6ff";
-      message.style.border = "1px solid #b8dcff";
-      message.style.fontSize = "14px";
-      message.style.color = "#1f2937";
-
-      var target = event && event.target ? event.target : document.body;
-      if (target && target.parentNode) {
-        target.parentNode.insertBefore(message, target.nextSibling);
-      } else {
-        document.body.prepend(message);
-      }
-    }
-
-    message.textContent = "Создаю пары и отправляю уведомления...";
-    console.log("PAIR_CREATE_BUTTON_CLICKED");
+    const button = event && event.target ? event.target.closest("button, a") : null;
+    showAdminActionMessage(button, "Создаю пары и отправляю уведомления...", false);
+    console.log("PAIR_CREATE_BUTTON_CLICKED_FORCED");
 
     try {
-      var response = await fetch("/api/pairs/create", {
+      const response = await fetch("/api/pairs/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({})
       });
 
-      var responseText = await response.text();
-      var data = responseText;
-      try {
-        data = responseText ? JSON.parse(responseText) : null;
-      } catch (e) {}
-
-      console.log("PAIR_CREATE_RESPONSE", response.status, data);
+      const text = await response.text();
+      console.log("PAIR_CREATE_RESPONSE_FORCED", response.status, text);
 
       if (!response.ok) {
-        message.style.background = "#fff1f2";
-        message.style.border = "1px solid #fecdd3";
-        message.textContent = "Ошибка создания пары: " + response.status + ". Подробности смотри в логах приложения.";
+        showAdminActionMessage(button, "Ошибка создания пар: " + response.status + ". Смотри лог приложения.", true);
         return false;
       }
 
-      message.style.background = "#ecfdf5";
-      message.style.border = "1px solid #a7f3d0";
-      message.textContent = "Пары созданы. Если SMTP настроен корректно, уведомления отправлены.";
+      showAdminActionMessage(button, "Пары созданы. Проверь блок «Текущие пары» и почту.", false);
 
       if (typeof loadUsers === "function") await loadUsers();
       if (typeof loadPairs === "function") await loadPairs();
@@ -3068,41 +3062,248 @@ restoreSession();
 
       return false;
     } catch (error) {
-      console.error("PAIR_CREATE_FRONTEND_ERROR", error);
-      message.style.background = "#fff1f2";
-      message.style.border = "1px solid #fecdd3";
-      message.textContent = "Ошибка отправки запроса: " + error;
+      console.error("PAIR_CREATE_FRONTEND_ERROR_FORCED", error);
+      showAdminActionMessage(button, "Ошибка запроса создания пар: " + error, true);
       return false;
     }
   }
 
-  window.randomCoffeeCreatePairsFromUi = randomCoffeeCreatePairsFromUi;
+  async function forceDownload(url, filename, button) {
+    try {
+      showAdminActionMessage(button, "Готовлю файл Excel...", false);
+      const response = await fetch(url, { method: "GET" });
 
-  function bindPairCreateButtons() {
-    var buttons = Array.prototype.slice.call(document.querySelectorAll("button, a"));
-    buttons.forEach(function (button) {
-      var text = ((button.textContent || "") + " " + (button.getAttribute("aria-label") || "") + " " + (button.getAttribute("title") || "")).toLowerCase();
-
-      if (
-        text.indexOf("создать пар") >= 0 ||
-        text.indexOf("сформировать пар") >= 0 ||
-        text.indexOf("пересоздать пар") >= 0 ||
-        text.indexOf("сгенерировать пар") >= 0 ||
-        text.indexOf("подобрать пар") >= 0
-      ) {
-        if (button.dataset.pairCreateBound === "1") return;
-        button.dataset.pairCreateBound = "1";
-        button.addEventListener("click", randomCoffeeCreatePairsFromUi, true);
+      if (!response.ok) {
+        const text = await response.text();
+        console.error("EXCEL_DOWNLOAD_ERROR", response.status, text);
+        showAdminActionMessage(button, "Ошибка скачивания Excel: " + response.status + ". Смотри лог приложения.", true);
+        return false;
       }
-    });
+
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = objectUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(objectUrl);
+
+      showAdminActionMessage(button, "Файл Excel скачан.", false);
+      return false;
+    } catch (error) {
+      console.error("EXCEL_DOWNLOAD_FRONTEND_ERROR", error);
+      showAdminActionMessage(button, "Ошибка скачивания Excel: " + error, true);
+      return false;
+    }
   }
 
-  document.addEventListener("DOMContentLoaded", bindPairCreateButtons);
+  window.randomCoffeeCreatePairsFromUi = forceCreatePairs;
+
+  function bindAdminButtons() {
+    const elements = Array.from(document.querySelectorAll("button, a"));
+    for (const el of elements) {
+      const text = (el.textContent || "").trim().toLowerCase();
+
+      if (text.includes("создать пары") || text.includes("создать пару")) {
+        if (el.dataset.forceCreatePairsBound !== "1") {
+          el.dataset.forceCreatePairsBound = "1";
+          el.setAttribute("type", "button");
+          el.addEventListener("click", forceCreatePairs, true);
+        }
+      }
+
+      if (text.includes("участники excel")) {
+        if (el.dataset.forceUsersExcelBound !== "1") {
+          el.dataset.forceUsersExcelBound = "1";
+          el.setAttribute("type", "button");
+          el.addEventListener("click", function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            return forceDownload("/api/export/users", "participants.xlsx", el);
+          }, true);
+        }
+      }
+
+      if (text.includes("пары excel")) {
+        if (el.dataset.forcePairsExcelBound !== "1") {
+          el.dataset.forcePairsExcelBound = "1";
+          el.setAttribute("type", "button");
+          el.addEventListener("click", function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            return forceDownload("/api/export/pairs", "pairs.xlsx", el);
+          }, true);
+        }
+      }
+
+      if (text.includes("отзывы excel")) {
+        if (el.dataset.forceFeedbackExcelBound !== "1") {
+          el.dataset.forceFeedbackExcelBound = "1";
+          el.setAttribute("type", "button");
+          el.addEventListener("click", function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            return forceDownload("/api/export/feedbacks", "feedbacks.xlsx", el);
+          }, true);
+        }
+      }
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", bindAdminButtons);
   document.addEventListener("click", function () {
-    setTimeout(bindPairCreateButtons, 100);
-    setTimeout(bindPairCreateButtons, 500);
+    setTimeout(bindAdminButtons, 50);
+    setTimeout(bindAdminButtons, 300);
   }, true);
-  setInterval(bindPairCreateButtons, 1500);
+  setInterval(bindAdminButtons, 1000);
+})();
+</script>
+
+
+<script>
+(function () {
+  async function postJson(url, payload) {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload || {})
+    });
+    const text = await response.text();
+    let data = text;
+    try { data = text ? JSON.parse(text) : null; } catch (e) {}
+    return { response, data };
+  }
+
+  function showMessageNear(element, id, text, isError) {
+    let message = document.getElementById(id);
+    if (!message) {
+      message = document.createElement("div");
+      message.id = id;
+      message.style.margin = "12px 0";
+      message.style.padding = "12px 14px";
+      message.style.borderRadius = "12px";
+      message.style.fontSize = "14px";
+      message.style.color = "#1f2937";
+      const parent = element && element.parentNode ? element.parentNode : document.body;
+      parent.insertBefore(message, element && element.nextSibling ? element.nextSibling : parent.firstChild);
+    }
+    message.style.background = isError ? "#fff1f2" : "#ecfdf5";
+    message.style.border = isError ? "1px solid #fecdd3" : "1px solid #a7f3d0";
+    message.textContent = text;
+  }
+
+  async function resetPairsWithEmail(event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    const button = event && event.target ? event.target.closest("button, a") : null;
+    showMessageNear(button || document.body, "pair-reset-status-message", "Сбрасываю пары и отправляю уведомления...", false);
+
+    try {
+      const result = await postJson("/api/pairs/reset", {});
+      console.log("PAIR_RESET_RESPONSE", result.response.status, result.data);
+
+      if (!result.response.ok) {
+        showMessageNear(button || document.body, "pair-reset-status-message", "Ошибка сброса пар: " + result.response.status, true);
+        return false;
+      }
+
+      showMessageNear(button || document.body, "pair-reset-status-message", "Пары сброшены. Уведомления отправлены, если SMTP настроен корректно.", false);
+
+      if (typeof loadPairs === "function") await loadPairs();
+      if (typeof loadUsers === "function") await loadUsers();
+      if (typeof renderAdmin === "function") renderAdmin();
+
+      return false;
+    } catch (error) {
+      console.error("PAIR_RESET_FRONTEND_ERROR", error);
+      showMessageNear(button || document.body, "pair-reset-status-message", "Ошибка сброса пар: " + error, true);
+      return false;
+    }
+  }
+
+  async function forgotPasswordWithEmail(event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    const target = event && event.target ? event.target : null;
+    const form = target && target.closest ? target.closest("form, .login-card, .auth-card, section, div") : document;
+    let emailInput = null;
+
+    if (form && form.querySelector) {
+      emailInput = form.querySelector('input[type="email"], input[name*="email" i], input[placeholder*="mail" i], input[placeholder*="почт" i]');
+    }
+    if (!emailInput) {
+      emailInput = document.querySelector('input[type="email"], input[name*="email" i], input[placeholder*="mail" i], input[placeholder*="почт" i]');
+    }
+
+    const email = emailInput ? emailInput.value.trim() : "";
+    if (!email) {
+      showMessageNear(target || document.body, "forgot-password-status-message", "Введите email для восстановления пароля.", true);
+      return false;
+    }
+
+    try {
+      showMessageNear(target || document.body, "forgot-password-status-message", "Отправляю уведомление о восстановлении пароля...", false);
+      const result = await postJson("/api/auth/forgot-password", { email });
+      console.log("FORGOT_PASSWORD_RESPONSE", result.response.status, result.data);
+
+      if (!result.response.ok) {
+        showMessageNear(target || document.body, "forgot-password-status-message", "Ошибка отправки уведомления: " + result.response.status, true);
+        return false;
+      }
+
+      showMessageNear(target || document.body, "forgot-password-status-message", "Если email есть в системе, уведомление будет отправлено.", false);
+      return false;
+    } catch (error) {
+      console.error("FORGOT_PASSWORD_FRONTEND_ERROR", error);
+      showMessageNear(target || document.body, "forgot-password-status-message", "Ошибка восстановления пароля: " + error, true);
+      return false;
+    }
+  }
+
+  window.randomCoffeeResetPairsWithEmail = resetPairsWithEmail;
+  window.randomCoffeeForgotPasswordWithEmail = forgotPasswordWithEmail;
+
+  function bindEmailFeatureButtons() {
+    const elements = Array.from(document.querySelectorAll("button, a"));
+    for (const el of elements) {
+      const text = (el.textContent || "").trim().toLowerCase();
+
+      if (text.includes("сбросить пары") || text.includes("сброс пар")) {
+        if (el.dataset.resetPairsEmailBound !== "1") {
+          el.dataset.resetPairsEmailBound = "1";
+          el.setAttribute("type", "button");
+          el.addEventListener("click", resetPairsWithEmail, true);
+        }
+      }
+
+      if (
+        text.includes("забыли пароль") ||
+        text.includes("забыл пароль") ||
+        text.includes("восстановить пароль") ||
+        text.includes("сбросить пароль")
+      ) {
+        if (el.dataset.forgotPasswordEmailBound !== "1") {
+          el.dataset.forgotPasswordEmailBound = "1";
+          el.setAttribute("type", "button");
+          el.addEventListener("click", forgotPasswordWithEmail, true);
+        }
+      }
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", bindEmailFeatureButtons);
+  document.addEventListener("click", function () {
+    setTimeout(bindEmailFeatureButtons, 50);
+    setTimeout(bindEmailFeatureButtons, 300);
+  }, true);
+  setInterval(bindEmailFeatureButtons, 1000);
 })();
 </script>
 

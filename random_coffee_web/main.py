@@ -1,3 +1,4 @@
+import ssl
 import traceback
 import base64
 import hashlib
@@ -42,6 +43,107 @@ def safe_row_get(row, key, default=""):
     except Exception:
         return default
     return row[key] if key in keys and row[key] is not None else default
+
+
+
+def send_smtp_email(to_email, subject, body):
+    smtp_host = os.environ.get("SMTP_HOST", "").strip()
+    smtp_port = int(os.environ.get("SMTP_PORT", "465") or "465")
+    smtp_user = os.environ.get("SMTP_USER", "").strip()
+    smtp_password = os.environ.get("SMTP_PASSWORD", "").strip()
+
+    if not smtp_host or not smtp_user or not smtp_password:
+        print("SMTP_NOT_CONFIGURED: SMTP_HOST/SMTP_USER/SMTP_PASSWORD are required")
+        return False
+
+    if not to_email:
+        print("SMTP_SKIP_EMPTY_RECIPIENT")
+        return False
+
+    try:
+        msg = EmailMessage()
+        msg["Subject"] = subject
+        msg["From"] = smtp_user
+        msg["To"] = to_email
+        msg.set_content(body)
+
+        if smtp_port == 465:
+            context = ssl.create_default_context()
+            with smtplib.SMTP_SSL(smtp_host, smtp_port, context=context, timeout=30) as smtp:
+                smtp.login(smtp_user, smtp_password)
+                smtp.send_message(msg)
+        else:
+            with smtplib.SMTP(smtp_host, smtp_port, timeout=30) as smtp:
+                smtp.starttls(context=ssl.create_default_context())
+                smtp.login(smtp_user, smtp_password)
+                smtp.send_message(msg)
+
+        print(f"SMTP_SENT: {to_email} | {subject}")
+        return True
+    except Exception as e:
+        print("SMTP_SEND_ERROR:", repr(e))
+        traceback.print_exc()
+        return False
+
+
+def notify_all_users_about_pairs_reset():
+    try:
+        conn = get_db_connection()
+        rows = conn.execute("SELECT name, email FROM users WHERE email IS NOT NULL AND TRIM(email) <> ''").fetchall()
+        conn.close()
+
+        for row in rows:
+            name = row["name"] if "name" in row.keys() and row["name"] else "участник"
+            email = row["email"]
+            send_smtp_email(
+                email,
+                "Random Coffee: пары были сброшены",
+                f"Здравствуйте, {name}!\n\nАдминистратор сбросил текущие пары Random Coffee.\nНовая пара появится после следующего формирования пар.\n\nС уважением,\nRandom Coffee"
+            )
+
+        print(f"PAIR_RESET_NOTIFICATIONS_SENT: {len(rows)}")
+        return True
+    except Exception as e:
+        print("PAIR_RESET_NOTIFY_ERROR:", repr(e))
+        traceback.print_exc()
+        return False
+
+
+def notify_password_forgot(email):
+    try:
+        if not email:
+            print("PASSWORD_RESET_EMPTY_EMAIL")
+            return False
+
+        conn = get_db_connection()
+        user = conn.execute("SELECT * FROM users WHERE lower(email) = lower(?)", (email,)).fetchone()
+        conn.close()
+
+        if not user:
+            print(f"PASSWORD_RESET_USER_NOT_FOUND: {email}")
+            return False
+
+        name = user["name"] if "name" in user.keys() and user["name"] else "участник"
+        token = secrets.token_urlsafe(24)
+
+        # В текущей версии сайта это уведомление информационное.
+        # Если будет добавлен экран смены пароля по токену, token можно сохранить в БД.
+        body = (
+            f"Здравствуйте, {name}!\n\n"
+            "Для вашей учетной записи Random Coffee был запрошен сброс/восстановление пароля.\n\n"
+            "Если это были вы, обратитесь к администратору проекта для смены пароля.\n"
+            f"Код обращения: {token}\n\n"
+            "Если вы не запрашивали восстановление пароля, просто проигнорируйте это письмо.\n\n"
+            "С уважением,\nRandom Coffee"
+        )
+
+        result = send_smtp_email(email, "Random Coffee: восстановление пароля", body)
+        print(f"PASSWORD_RESET_NOTIFICATION_SENT: {email} result={result}")
+        return result
+    except Exception as e:
+        print("PASSWORD_RESET_NOTIFY_ERROR:", repr(e))
+        traceback.print_exc()
+        return False
 
 
 app = FastAPI(title="Mriya Random Coffee")
