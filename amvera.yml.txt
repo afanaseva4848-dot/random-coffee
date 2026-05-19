@@ -1,0 +1,11 @@
+meta:
+  environment: python
+  tool: pip
+  version: "3.11"
+
+build:
+  requirementsPath: requirements.txt
+
+run:
+  command: sh run.sh
+  containerPort: 8000
