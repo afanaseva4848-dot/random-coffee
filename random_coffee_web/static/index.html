@@ -1393,7 +1393,7 @@ body.admin-page-open #adminSection {
 
     <div id="adminControls" class="hidden">
       <div class="row">
-        <button class="success" onclick="createPairs()">☕ Создать пары</button>
+        <button type="button" onclick="return randomCoffeeCreatePairsFromUi(event)" class="success" onclick="createPairs()">☕ Создать пары</button>
         <button class="danger" onclick="resetPairs()">🗑 Сбросить пары</button>
         <button class="secondary" onclick="loadAdminData()">🔄 Обновить</button>
         <button class="secondary" onclick="exportUsersExcel()">⬇️ Участники Excel</button>
@@ -3002,5 +3002,109 @@ document.addEventListener("DOMContentLoaded", function () {
 restoreSession();
 });
 </script>
+
+<script>
+(function () {
+  async function randomCoffeeCreatePairsFromUi(event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    var message = document.getElementById("pair-create-status-message");
+    if (!message) {
+      message = document.createElement("div");
+      message.id = "pair-create-status-message";
+      message.style.margin = "12px 0";
+      message.style.padding = "12px 14px";
+      message.style.borderRadius = "12px";
+      message.style.background = "#eef6ff";
+      message.style.border = "1px solid #b8dcff";
+      message.style.fontSize = "14px";
+      message.style.color = "#1f2937";
+
+      var target = event && event.target ? event.target : document.body;
+      if (target && target.parentNode) {
+        target.parentNode.insertBefore(message, target.nextSibling);
+      } else {
+        document.body.prepend(message);
+      }
+    }
+
+    message.textContent = "Создаю пары и отправляю уведомления...";
+    console.log("PAIR_CREATE_BUTTON_CLICKED");
+
+    try {
+      var response = await fetch("/api/pairs/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({})
+      });
+
+      var responseText = await response.text();
+      var data = responseText;
+      try {
+        data = responseText ? JSON.parse(responseText) : null;
+      } catch (e) {}
+
+      console.log("PAIR_CREATE_RESPONSE", response.status, data);
+
+      if (!response.ok) {
+        message.style.background = "#fff1f2";
+        message.style.border = "1px solid #fecdd3";
+        message.textContent = "Ошибка создания пары: " + response.status + ". Подробности смотри в логах приложения.";
+        return false;
+      }
+
+      message.style.background = "#ecfdf5";
+      message.style.border = "1px solid #a7f3d0";
+      message.textContent = "Пары созданы. Если SMTP настроен корректно, уведомления отправлены.";
+
+      if (typeof loadUsers === "function") await loadUsers();
+      if (typeof loadPairs === "function") await loadPairs();
+      if (typeof loadFeedbacks === "function") await loadFeedbacks();
+      if (typeof renderAdmin === "function") renderAdmin();
+      if (typeof renderMyPair === "function") renderMyPair();
+
+      return false;
+    } catch (error) {
+      console.error("PAIR_CREATE_FRONTEND_ERROR", error);
+      message.style.background = "#fff1f2";
+      message.style.border = "1px solid #fecdd3";
+      message.textContent = "Ошибка отправки запроса: " + error;
+      return false;
+    }
+  }
+
+  window.randomCoffeeCreatePairsFromUi = randomCoffeeCreatePairsFromUi;
+
+  function bindPairCreateButtons() {
+    var buttons = Array.prototype.slice.call(document.querySelectorAll("button, a"));
+    buttons.forEach(function (button) {
+      var text = ((button.textContent || "") + " " + (button.getAttribute("aria-label") || "") + " " + (button.getAttribute("title") || "")).toLowerCase();
+
+      if (
+        text.indexOf("создать пар") >= 0 ||
+        text.indexOf("сформировать пар") >= 0 ||
+        text.indexOf("пересоздать пар") >= 0 ||
+        text.indexOf("сгенерировать пар") >= 0 ||
+        text.indexOf("подобрать пар") >= 0
+      ) {
+        if (button.dataset.pairCreateBound === "1") return;
+        button.dataset.pairCreateBound = "1";
+        button.addEventListener("click", randomCoffeeCreatePairsFromUi, true);
+      }
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", bindPairCreateButtons);
+  document.addEventListener("click", function () {
+    setTimeout(bindPairCreateButtons, 100);
+    setTimeout(bindPairCreateButtons, 500);
+  }, true);
+  setInterval(bindPairCreateButtons, 1500);
+})();
+</script>
+
 </body>
 </html>
