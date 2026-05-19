@@ -1284,4 +1284,11 @@ def export_pairs_excel(x_admin_password: Optional[str] = Header(default=None)):
     return xlsx_response("random-coffee-pairs.xlsx", build_xlsx(headers, data))
 
 
+@app.get("/{full_path:path}")
+def spa_fallback(full_path: str):
+    if full_path.startswith("api/") or full_path.startswith("static/"):
+        raise HTTPException(status_code=404, detail="Not found")
+
+    return FileResponse(BASE_DIR / "static" / "index.html")
+
 
