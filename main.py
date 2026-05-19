@@ -299,10 +299,6 @@ def init_db():
         db.commit()
 
 
-@app.on_event("startup")
-def startup():
-    init_db()
-
 
 
 def _excel_col_name(index: int) -> str:
